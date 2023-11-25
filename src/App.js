@@ -6,6 +6,7 @@ import LeftSideNav from './common/LeftSideNav';
 import Contents from './common/Contents';
 import Contents2 from './common/Contents2';
 import Contents3 from './common/Contents3';
+import Footer from './common/Footer';
 
 class App extends React.Component {
 
@@ -20,11 +21,14 @@ class App extends React.Component {
         <Header />
         <div id="layoutSidenav">
           <LeftSideNav />
-          <Routes>
-            <Route path="/" exact element={<Contents />} />
-            <Route path="/list" element={<Contents2 />} />
-            <Route path="/analyze" element={<Contents3 />} />
-          </Routes>
+          <div id="layoutSidenav_content">
+            <Routes>
+              <Route path="/" exact element={<Contents />} />
+              <Route path="/list" element={<Contents2 />} />
+              <Route path="/analyze" element={<Contents3 />} />
+            </Routes>
+            <Footer />
+          </div>
         </div>
       </div>
     );
