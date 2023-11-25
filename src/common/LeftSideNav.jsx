@@ -8,15 +8,15 @@ const LeftSideNav = () => {
             <div className="sb-sidenav-menu">
               <div className="nav">
                 <div className="sb-sidenav-menu-heading">MENU</div>
-                <a className="nav-link" href="index.html">
+                <a className="nav-link" href="/">
                   <div className="sb-nav-link-icon"><i className="fas fa-tachometer-alt" /></div>
                   Query Execute
                 </a>
-                <a className="nav-link" href="index.html">
+                <a className="nav-link" href="list">
                   <div className="sb-nav-link-icon"><i className="fas fa-columns" /></div>
                   Query Plan List
                 </a>
-                <a className="nav-link" href="index.html">
+                <a className="nav-link" href="analyze">
                   <div className="sb-nav-link-icon"><i className="fas fa-book-open" /></div>
                   Analyze Query
                 </a>
