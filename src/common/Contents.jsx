@@ -5,44 +5,36 @@ const Contents = () => {
       <>
         <main>
           <div className="container-fluid px-4">
-            <h1 className="mt-4">Dashboard</h1>
-            <ol className="breadcrumb mb-4">
-              <li className="breadcrumb-item active">Dashboard</li>
-            </ol>
             <div className="row">
-              <div className="col-xl-3 col-md-6">
-                <div className="card bg-primary text-white mb-4">
-                  <div className="card-body">Primary Card</div>
-                  <div className="card-footer d-flex align-items-center justify-content-between">
-                    <a className="small text-white stretched-link" href="#">View Details</a>
-                    <div className="small text-white"><i className="fas fa-angle-right" /></div>
+              <div className="col">
+                <h1 className="mt-4">File upload with query</h1>
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                  <option selected>Open this select menu</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+                <input className="form-control" type="file" id="formFile" />
+                <div className="col-xl-3 col-md-6">
+                  <div className="card bg-primary text-white mb-4">
+                    <div className="card-body">Success Card</div>
                   </div>
                 </div>
               </div>
-              <div className="col-xl-3 col-md-6">
-                <div className="card bg-warning text-white mb-4">
-                  <div className="card-body">Warning Card</div>
-                  <div className="card-footer d-flex align-items-center justify-content-between">
-                    <a className="small text-white stretched-link" href="#">View Details</a>
-                    <div className="small text-white"><i className="fas fa-angle-right" /></div>
-                  </div>
+              <div className="col">
+                <h1 className="mt-4">Execute a query</h1>
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                  <option selected>Open this select menu</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+                <div className="form-floating">
+                  <textarea className="form-control" placeholder="Leave a comment here" id="floatingTextarea2"></textarea>
                 </div>
-              </div>
-              <div className="col-xl-3 col-md-6">
-                <div className="card bg-success text-white mb-4">
-                  <div className="card-body">Success Card</div>
-                  <div className="card-footer d-flex align-items-center justify-content-between">
-                    <a className="small text-white stretched-link" href="#">View Details</a>
-                    <div className="small text-white"><i className="fas fa-angle-right" /></div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-3 col-md-6">
-                <div className="card bg-danger text-white mb-4">
-                  <div className="card-body">Danger Card</div>
-                  <div className="card-footer d-flex align-items-center justify-content-between">
-                    <a className="small text-white stretched-link" href="#">View Details</a>
-                    <div className="small text-white"><i className="fas fa-angle-right" /></div>
+                <div className="col-xl-3 col-md-6">
+                  <div className="card bg-primary text-white mb-4">
+                    <div className="card-body">Success Card</div>
                   </div>
                 </div>
               </div>
