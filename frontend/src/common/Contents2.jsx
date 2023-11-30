@@ -1,28 +1,28 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-const Contents = () => {
+const Contents2 = () => {
     return (
       <>
         <main>
           <div className="container-fluid px-4">
             <div className="row">
               <div className="col">
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                  <option selected>Open this select menu</option>
+                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
+                  <option value="0">Open this select menu</option>
                   <option value="1">One</option>
                   <option value="2">Two</option>
                   <option value="3">Three</option>
                 </select>
               </div>
               <div className="col">
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                  <option selected>Open this select menu</option>
+                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
+                  <option value="0">Open this select menu</option>
                   <option value="1">One</option>
                   <option value="2">Two</option>
                   <option value="3">Three</option>
                 </select>
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                  <option selected>Open this select menu</option>
+                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
+                  <option value="0">Open this select menu</option>
                   <option value="1">One</option>
                   <option value="2">Two</option>
                   <option value="3">Three</option>
@@ -96,4 +96,4 @@ const Contents = () => {
     );
 };
 
-export default Contents
+export default Contents2

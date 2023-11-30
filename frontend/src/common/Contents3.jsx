@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import Contents3_1 from './Contents3_1';
-import Contents3_2 from './Contents3_2';
-import Contents3_3 from './Contents3_3';
+import Contents3Tab1 from './Contents3-1';
+import Contents3Tab2 from './Contents3-2';
+import Contents3Tab3 from './Contents3-3';
 
-const Contents = () => {
+const Contents3 = () => {
   const [activeTab, setActiveTab] = useState("tab1");
 
   const handleTab1 = () => {
@@ -32,10 +32,10 @@ const Contents = () => {
             </li>
           </ul>
         </div>
-        {activeTab === "tab1" ? <Contents3_1 /> : activeTab === "tab2" ? <Contents3_2 /> : <Contents3_3 /> }
+        {activeTab === "tab1" ? <Contents3Tab1 /> : activeTab === "tab2" ? <Contents3Tab2 /> : <Contents3Tab3 /> }
       </main>
     </>
   );
 };
 
-export default Contents
+export default Contents3
