@@ -7,6 +7,7 @@ import Footer from './common/Footer';
 import Contents from './user/Contents';
 import Contents2 from './user/Contents2';
 import Contents3 from './user/Contents3';
+import Admin from './admin/AdminHome';
 
 class App extends React.Component {
 
@@ -26,6 +27,7 @@ class App extends React.Component {
               <Route path="/" exact element={<Contents />} />
               <Route path="/list" element={<Contents2 />} />
               <Route path="/analyze" element={<Contents3 />} />
+              <Route path="/admin" element={<Admin />} />
             </Routes>
             <Footer />
           </div>
