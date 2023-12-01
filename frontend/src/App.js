@@ -3,10 +3,10 @@ import './App.css';
 import { Route, Routes } from "react-router-dom";
 import Header from './common/Header';
 import LeftSideNav from './common/LeftSideNav';
-import Contents from './common/Contents';
-import Contents2 from './common/Contents2';
-import Contents3 from './common/Contents3';
 import Footer from './common/Footer';
+import Contents from './user/Contents';
+import Contents2 from './user/Contents2';
+import Contents3 from './user/Contents3';
 
 class App extends React.Component {
 
