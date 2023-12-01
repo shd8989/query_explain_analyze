@@ -5,24 +5,16 @@ const api_context = '/api/v1'
 
 app.set('port', process.env.PORT || 3001);
 
-const bodyParser = require('body-parser')
-app.use(bodyParser.json())
+app.use(express.json());
 app.use(
-  bodyParser.urlencoded({
+    express.urlencoded({
     extended: true,
   })
-)
+);
+// app.use(cors());
 
 app.listen(app.get('port'), ()=>{
     console.log(app.get('port'), '번 포트에서 대기 중')
-});
-
-app.get('/', (req, res) => {
-    res.send('Hello, Express');
-});
-
-app.get('/test', (req, res) => {
-    res.send('test page');
 });
 
 const { Pool } = require("pg");
@@ -34,17 +26,30 @@ const pool = new Pool({
     port: 5430,
 });
 
-// app.get(api_context + '/query-list', (req, res) => {
-//     pool.connect();
-//     var sql = "SELECT * FROM tb_test WHERE tb_id = $1";
-//     var values = ['200']
-//     client.query(sql, values, (err, res) => {
-// //        res.send({data: res.rows});
-//         data = res.rows;
-//         console.log('succcess connection');
-//         console.log(res.rows);
-//     });
-// });
+app.get('/', (req, res) => {
+    res.send('Hello, Express');
+});
+
+app.get('/test', (req, res) => {
+    res.send('test page');
+});
+
+app.get(api_context + '/query-list', (req, res) => {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT * FROM result_functional_test OFFSET 0 LIMIT 10";
+        pool.query(selectQuery, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
 
 app.post(api_context + '/single-query', (req) => {
     const {query} = req.body;
@@ -61,7 +66,7 @@ app.post(api_context + '/single-query', (req) => {
         .catch((e) => {
             client.query(insertQuery, [query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
             .catch((e) => console.error(e.stack));
-        })
+        });
     });
     pool.on('end', function() {client.end();});
 });
@@ -83,7 +88,7 @@ app.post(api_context + '/multi-query', (req) => {
             .catch((e) => {
                 client.query(insertQuery, [query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
                 .catch((e) => console.error(e.stack));
-            })
+            });
         }
     });
     pool.on('end', function() {client.end();});
