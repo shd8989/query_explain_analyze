@@ -5,7 +5,10 @@
   "scripts": {
     "start": "npm-run-all --parallel backend frontend",
     "backend": "cd backend && npm run start",
-    "frontend": "cd frontend && npm run start"
+    "frontend": "cd frontend && npm run start",
+    "setup": "npm install && npm-run-all --parallel setup-frontend setup-backend",
+    "setup-frontend": "cd frontend && npm install",
+    "setup-backend": "cd backend && npm install"
   },
   "eslintConfig": {
     "extends": [
