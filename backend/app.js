@@ -30,10 +30,6 @@ app.get('/', (req, res) => {
     res.send('Hello, Express');
 });
 
-app.get('/test', (req, res) => {
-    res.send('test page');
-});
-
 app.get(api_context + '/query-list', (req, res) => {
     pool.connect(function(err) {
         if(err) {
@@ -92,4 +88,28 @@ app.post(api_context + '/multi-query', (req) => {
         }
     });
     pool.on('end', function() {client.end();});
+});
+app.post(api_context + '/createdb', (req) => {
+    const {host, port, dbname, dbuser, dbuserpw} = req.body;
+    const newPool = new Pool({
+        host: host,
+        port: port,
+        database: dbname,
+        user: dbuser,
+        password: dbuserpw
+    });
+    newPool.connect(function(err, client) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const insertQuery = "INSERT INTO tb_databse (host, port, dbname, dbuser, dbuserpw) VALUES ($1, $2, $3, $4, $5)";
+        client.query(insertQuery, [host, port, dbname, dbuser, dbuserpw])
+        .then((res) => {
+            console.log('success insert database information');
+        })
+        .catch((e) => {
+            console.error(e.stack);
+        });
+    });
+    newPool.on('end', function() {client.end();});
 });
