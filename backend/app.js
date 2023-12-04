@@ -90,20 +90,20 @@ app.post(api_context + '/multi-query', (req) => {
     pool.on('end', function() {client.end();});
 });
 app.post(api_context + '/createdb', (req) => {
-    const {host, port, dbname, dbuser, dbuserpw} = req.body;
+    const {nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn} = req.body;
     const newPool = new Pool({
-        host: host,
-        port: port,
-        database: dbname,
-        user: dbuser,
-        password: dbuserpw
+        host: dbHost,
+        port: dbPort,
+        database: dbName,
+        user: dbUser,
+        password: dbUserPw
     });
     newPool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO tb_databse (host, port, dbname, dbuser, dbuserpw) VALUES ($1, $2, $3, $4, $5)";
-        client.query(insertQuery, [host, port, dbname, dbuser, dbuserpw])
+        const insertQuery = "INSERT INTO tb_databse (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
+        client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
         .then((res) => {
             console.log('success insert database information');
         })

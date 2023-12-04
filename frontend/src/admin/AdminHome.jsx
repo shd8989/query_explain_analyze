@@ -1,56 +1,58 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 
 const Admin = () => {
-  // const [formData, setFormData] = useState([{
-  //   nickname: '',
-  //   host: '',
-  //   port: '',
-  //   dbname: '',
-  //   dbuser: '',
-  //   dbuserpw: '',
-  //   rst: ''
-  // }]);
   const [nickname, setNickname] = useState('');
-  const [host, setHost] = useState('');
-  const [port, setPort] = useState(5432);
-  const [dbname, setDbname] = useState('postgres');
-  const [dbuser, setDbuser] = useState('');
-  const [dbuserpw, setDbuserpw] = useState('');
+  const [dbHost, setDbHost] = useState('');
+  const [dbPort, setDbPort] = useState(5432);
+  const [dbName, setDbName] = useState('postgres');
+  const [dbUser, setDbUser] = useState('');
+  const [dbUserPw, setDbUserPw] = useState('');
+  const [dbUserPwConfirm, setDbUserPwConfirm] = useState('');
+  const [resultDbYn, setResultDbYn] = useState('T');
+
 
   const createDb = async () => {
-    if(host !== '') {
+    setNickname(nickname => nickname);
+    setDbHost(dbHost => dbHost);
+    setDbPort(dbPort => dbPort);
+    setDbName(dbName => dbName);
+    setDbUser(dbUser => dbUser);
+    setDbUserPw(dbUserPw => dbUserPw);
+    setDbUserPwConfirm(dbUserPwConfirm => dbUserPwConfirm);
+    setResultDbYn(resultDbYn => resultDbYn);
+
+    if(dbHost !== '' && dbPort !== '' && dbName !== '' && dbUser !=='' && dbUserPw !== '') {
       await axios.post('/api/v1/createdb', {
-        host: host,
-        port: port,
-        dbname: dbname,
-        dbuser: dbuser,
-        dbuserpw: dbuserpw
+        nickname: nickname,
+        dbHost: dbHost,
+        dbPort: dbPort,
+        dbName: dbName,
+        dbUser: dbUser,
+        dbUserPw: dbUserPw,
+        resultDbYn: resultDbYn
       })
       .then(response => {console.log(response);});
     }
   };
 
-  function onChange(e) {
+  function handleChange(e) {
     if(e.target.id === 'inputDbNickname') {
       setNickname(e.target.value)
     } else if(e.target.id === 'inputDbHost') {
-      setHost(e.target.value)
+      setDbHost(e.target.value)
     } else if(e.target.id === 'inputDbPort') {
-      setPort(e.target.value)
+      setDbPort(e.target.value)
     } else if(e.target.id === 'inputDbName') {
-      setDbname(e.target.value)
+      setDbName(e.target.value)
     } else if(e.target.id === 'inputDbUser') {
-      setDbuser(e.target.value)
-    } else if(e.target.id === 'inputPassword') {
-      setDbuserpw(e.target.value)
+      setDbUser(e.target.value)
+    } else if(e.target.id === 'inputPasswd') {
+      setDbUserPw(e.target.value)
+    } else if(e.target.id === 'flexRadioDefault1' || e.target.id === 'flexRadioDefault2') {
+      setResultDbYn(e.target.value)
     }
   };
-
-  useEffect(() => {
-    createDb();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
@@ -67,19 +69,19 @@ const Admin = () => {
                 <div className="card-body">
                   <form>
                     <div className="form-floating mb-3">
-                      <input className="form-control" id="inputDbNickname" type="text" placeholder="Enter DB nickname" onChange={onChange} />
+                      <input className="form-control" id="inputDbNickname" type="text" placeholder="Enter DB nickname" onChange={handleChange} value={nickname} />
                       <label htmlFor="inputDbNickname">DB Nickname</label>
                     </div>
                     <div className="row mb-3">
                       <div className="col-md-6">
                         <div className="form-floating mb-3 mb-md-0">
-                          <input className="form-control" id="inputDbHost" type="text" placeholder="Enter DB host" onChange={onChange} />
+                          <input className="form-control" id="inputDbHost" type="text" placeholder="Enter DB host" onChange={handleChange} value={dbHost} />
                           <label htmlFor="inputDbHost">DB host</label>
                         </div>
                       </div>
                       <div className="col-md-6">
                         <div className="form-floating">
-                          <input className="form-control" id="inputDbPort" type="text" placeholder="Enter DB port" onChange={onChange} />
+                          <input className="form-control" id="inputDbPort" type="text" placeholder="Enter DB port" onChange={handleChange} value={dbPort} />
                           <label htmlFor="inputDbPort">DB port</label>
                         </div>
                       </div>
@@ -87,7 +89,7 @@ const Admin = () => {
                     <div className="row mb-3">
                       <div className="col-md-6">
                         <div className="form-floating mb-3 mb-md-0">
-                          <input className="form-control" id="inputDbName" type="text" placeholder="Enter DB name" onChange={onChange} />
+                          <input className="form-control" id="inputDbName" type="text" placeholder="Enter DB name" onChange={handleChange} value={dbName} />
                           <label htmlFor="inputDbName">DB Name</label>
                         </div>
                       </div>
@@ -95,7 +97,7 @@ const Admin = () => {
                     <div className="row mb-3">
                       <div className="col-md-6">
                         <div className="form-floating mb-3 mb-md-0">
-                          <input className="form-control" id="inputDbUser" type="text" placeholder="Enter DB user" onChange={onChange} />
+                          <input className="form-control" id="inputDbUser" type="text" placeholder="Enter DB user" onChange={handleChange} value={dbUser} />
                           <label htmlFor="inputDbUser">DB User</label>
                         </div>
                       </div>
@@ -103,17 +105,31 @@ const Admin = () => {
                     <div className="row mb-3">
                       <div className="col-md-6">
                         <div className="form-floating mb-3 mb-md-0">
-                          <input className="form-control" id="inputPassword" type="password" placeholder="Create a password" onChange={onChange} />
-                          <label htmlFor="inputPassword">Password</label>
+                          <input className="form-control" id="inputPasswd" type="password" placeholder="Create a password" onChange={handleChange} value={dbUserPw} />
+                          <label htmlFor="inputPasswd">Password</label>
                         </div>
                       </div>
                       <div className="col-md-6">
                         <div className="form-floating mb-3 mb-md-0">
-                          <input className="form-control" id="inputPasswordConfirm" type="password" placeholder="Confirm password" onChange={onChange} />
-                          <label htmlFor="inputPasswordConfirm">
+                          <input className="form-control" id="inputPasswdConfirm" type="password" placeholder="Confirm password" onChange={handleChange} value={dbUserPw !== dbUserPwConfirm ? "비밀번호가 일치하지 않음" : dbUserPwConfirm} />
+                          <label htmlFor="inputPasswdConfirm">
                             Confirm Password
                           </label>
                         </div>
+                      </div>
+                    </div>
+                    <div className="col-md-12 radio_btn">
+                      <div className="form-check col-md-6">
+                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="T" onChange={handleChange} defaultChecked />
+                        <label className="form-check-label" htmlFor="flexRadioDefault1">
+                          Database for testing
+                        </label>
+                      </div>
+                      <div className="form-check col-md-6">
+                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="S" onChange={handleChange} />
+                        <label className="form-check-label" htmlFor="flexRadioDefault2">
+                          Database for saving a result of test
+                        </label>
                       </div>
                     </div>
                     <div className="mt-4 mb-0">
