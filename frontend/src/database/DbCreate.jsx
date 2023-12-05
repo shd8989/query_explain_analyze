@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 
-const Admin = () => {
+const DbCreate = () => {
   const [nickname, setNickname] = useState('');
   const [dbHost, setDbHost] = useState('');
   const [dbPort, setDbPort] = useState(5432);
@@ -148,4 +148,4 @@ const Admin = () => {
   );
 };
 
-export default React.memo(Admin);
+export default React.memo(DbCreate);

@@ -89,6 +89,24 @@ app.post(api_context + '/multi-query', (req) => {
     });
     pool.on('end', function() {client.end();});
 });
+
+app.get(api_context + '/db-list', (req, res) => {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT * FROM tb_databse OFFSET 0 LIMIT 10";
+        pool.query(selectQuery, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
+
 app.post(api_context + '/createdb', (req) => {
     const {nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn} = req.body;
     const newPool = new Pool({
