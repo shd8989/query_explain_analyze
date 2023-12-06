@@ -95,7 +95,7 @@ app.get(api_context + '/db-list', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_databse OFFSET 0 LIMIT 10";
+        const selectQuery = "SELECT * FROM tb_databse ORDER BY db_seq desc";
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);
