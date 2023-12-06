@@ -131,3 +131,20 @@ app.post(api_context + '/createdb', (req) => {
     });
     newPool.on('end', function() {client.end();});
 });
+
+app.get(api_context + '/db-conn-info', (req, res) => {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT * FROM tb_databse";
+        pool.query(selectQuery, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
