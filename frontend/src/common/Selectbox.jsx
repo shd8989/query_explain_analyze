@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
-const Selectbox = () => {
+const Selectbox = ({ sendDataToParent }) => {
   const [data, setData] = useState([{
     db_seq: '',
     db_host: '',
@@ -27,9 +27,13 @@ const Selectbox = () => {
     };
     dbConn().then(res => setData(res));
   }, []);
+
+  const selectChange = (e) => {
+    sendDataToParent(e.target.value);
+  };
   
   return (
-    <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
+    <select onChange={selectChange} className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
       <option value="0">Database Connection Information</option>
       {data.map(item => (
         <option key={item.db_seq} value={item.db_seq}>{item.nickname}</option>

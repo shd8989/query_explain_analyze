@@ -35,7 +35,7 @@ app.get(api_context + '/query-list', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM result_functional_test OFFSET 0 LIMIT 10";
+        const selectQuery = "SELECT * FROM tb_result_querytest OFFSET 0 LIMIT 10";
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);
@@ -48,19 +48,19 @@ app.get(api_context + '/query-list', (req, res) => {
 });
 
 app.post(api_context + '/single-query', (req) => {
-    const {query} = req.body;
+    const {query, dbSeq} = req.body;
     pool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO result_functional_test (query, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, now())";
+        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, now())";
         client.query(query)
         .then((res) => {
-            client.query(insertQuery, [query, Object.values(res.rows[0])[0], 'Success', ''])
+            client.query(insertQuery, [dbSeq, query, Object.values(res.rows[0])[0], 'Success', ''])
             .catch((e) => console.error(e.stack));
         })
         .catch((e) => {
-            client.query(insertQuery, [query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
+            client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
             .catch((e) => console.error(e.stack));
         });
     });
@@ -68,21 +68,21 @@ app.post(api_context + '/single-query', (req) => {
 });
 
 app.post(api_context + '/multi-query', (req) => {
-    const {queries} = req.body.data;
+    const {data, dbSeq} = req.body;
     pool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
         }
-        for(var i=0; i<Object.values(queries).length; i++) {
-            const insertQuery = "INSERT INTO result_functional_test (query, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, now())";
-            let query = Object.values(Object.values(queries)[i])[0];
+        for(var i=0; i<data.length; i++) {
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, now())";
+            let query = data[i];
             client.query(query)
             .then((res) => {
-                client.query(insertQuery, [query, Object.values(res.rows[0])[0], 'Success', ''])
+                client.query(insertQuery, [dbSeq, query, Object.values(res.rows[0])[0], 'Success', ''])
                 .catch((e) => console.error(e.stack));
             })
             .catch((e) => {
-                client.query(insertQuery, [query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
+                client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
                 .catch((e) => console.error(e.stack));
             });
         }
