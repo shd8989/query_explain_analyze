@@ -30,12 +30,29 @@ app.get('/', (req, res) => {
     res.send('Hello, Express');
 });
 
+app.get(api_context + '/db-conn', (req, res) => {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT * FROM tb_result_querytest";
+        pool.query(selectQuery, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
+
 app.get(api_context + '/query-list', (req, res) => {
     pool.connect(function(err) {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_result_querytest OFFSET 0 LIMIT 10";
+        const selectQuery = "SELECT * FROM tb_result_querytest ORDER BY query_seq desc";
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);

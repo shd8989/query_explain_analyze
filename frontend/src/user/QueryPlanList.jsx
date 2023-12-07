@@ -1,20 +1,23 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios';
-import Selectbox from '../common/Selectbox'
+import Selectbox from '../common/Selectbox';
+import Pagination from '../common/Pagination';
 
-function QueryRow({seq, query, rst, extime}) {
+function QueryRow({data}) {
   return (
     <>
-      <tr>
-        <th scope="row">{seq}</th>
-        <td>{extime}</td>
-        <td>{rst}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
+      {data.map(item => (
+        <tr key={item.query_seq}>
+          <th scope="row">{item.query_seq}</th>
+          <td>{item.extime}</td>
+          <td>{item.rst}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      ))}
     </>
   )
 }
@@ -49,11 +52,15 @@ const QueryPlanList = () => {
     };
 //    selectQuery().then(res => setQueryData(queryData.concat(res)));
     selectQuery().then(res => setQueryData(res));
-  }, [])
+  }, []);
 
-  const QueryRowList = queryData.map(data => (
-    <QueryRow key={data.query_seq} seq={data.query_seq} query={data.query} rst={data.rst} extime={data.execute_time} />
-  ));
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage] = useState(10);
+
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = queryData.slice(indexOfFirstRecord, indexOfLastRecord);
+  const nPages = Math.ceil(queryData.length / recordsPerPage)
 
   return (
     <>
@@ -93,31 +100,15 @@ const QueryPlanList = () => {
                 </tr>
               </thead>
               <tbody>
-                {QueryRowList}
+                <QueryRow data={currentRecords} key={currentRecords.query_seq} />
               </tbody>
             </table>
           </div>
-          <div className="col">
-            <nav aria-label="Page navigation example">
-              <ul className="pagination">
-                <li className="page-item">
-                  <a className="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">«</span>
-                    <span className="sr-only">Previous</span>
-                  </a>
-                </li>
-                <li className="page-item"><a className="page-link" href="#">1</a></li>
-                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                <li className="page-item">
-                  <a className="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">»</span>
-                    <span className="sr-only">Next</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
+          <Pagination
+            nPages={nPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
       </main>
     </>
