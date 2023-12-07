@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as XLSX from 'xlsx';
 import Selectbox from '../common/Selectbox'
 
-const Contents = () => {
+const QueryExecute = () => {
   const [text, setText] = useState('');
   const [multiQueries, setMultiQueries] = useState([]);
   const [dbSeq, setDbSeq] = useState('');
@@ -103,4 +103,4 @@ const Contents = () => {
   );
 };
 
-export default React.memo(Contents);
+export default React.memo(QueryExecute);

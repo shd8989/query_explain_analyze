@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import Contents3Tab1 from './Contents3-1';
-import Contents3Tab2 from './Contents3-2';
-import Contents3Tab3 from './Contents3-3';
+import CompareQuery from './CompareQuery';
+import QueryPlanText from './QueryPlanText';
+import QueryPlanView from './QueryPlanView';
 
-const Contents3 = () => {
+const AnalyzeQuery = () => {
   const [activeTab, setActiveTab] = useState("tab1");
 
   const handleTab1 = () => {
@@ -32,10 +32,10 @@ const Contents3 = () => {
             </li>
           </ul>
         </div>
-        {activeTab === "tab1" ? <Contents3Tab1 /> : activeTab === "tab2" ? <Contents3Tab2 /> : <Contents3Tab3 /> }
+        {activeTab === "tab1" ? <CompareQuery /> : activeTab === "tab2" ? <QueryPlanText /> : <QueryPlanView /> }
       </main>
     </>
   );
 };
 
-export default Contents3
+export default AnalyzeQuery

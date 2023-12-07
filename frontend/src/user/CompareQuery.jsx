@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Contents3_1 = () => {
+const CompareQuery = () => {
     return (
       <>
         <main>
@@ -80,4 +80,4 @@ const Contents3_1 = () => {
     );
 };
 
-export default Contents3_1
+export default CompareQuery

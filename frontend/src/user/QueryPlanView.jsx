@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Contents3_2 = () => {
+const QueryPlanView = () => {
     return (
       <>
         <main>
@@ -8,12 +8,12 @@ const Contents3_2 = () => {
             <div className="row">
               <div className="col">
                 <div className="text-nowrap">
-                  Query Plan(Text)
+                  Query Plan(View)
                 </div>
               </div>
               <div className="col">
                 <div className="text-nowrap">
-                  Query Plan(Text)
+                  Query Plan(View)
                 </div>
               </div>
             </div>
@@ -23,4 +23,4 @@ const Contents3_2 = () => {
     );
 };
 
-export default Contents3_2
+export default QueryPlanView

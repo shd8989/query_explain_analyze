@@ -19,7 +19,7 @@ function QueryRow({seq, query, rst, extime}) {
   )
 }
 
-const Contents2 = () => {
+const QueryPlanList = () => {
   const [queryData, setQueryData] = useState([{
     query_seq: '',
     error_msg: '',
@@ -124,4 +124,4 @@ const Contents2 = () => {
   );
 };
 
-export default Contents2
+export default QueryPlanList
