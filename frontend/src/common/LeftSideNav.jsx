@@ -7,6 +7,17 @@ const LeftSideNav = () => {
           <nav className="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
             <div className="sb-sidenav-menu">
               <div className="nav">
+                <div className="sb-sidenav-menu-heading">DATABASE</div>
+                <a className="nav-link" href="db-create">
+                  <div className="sb-nav-link-icon"><i className="fas fa-tachometer-alt" /></div>
+                  DB Connection Create
+                </a>
+                <a className="nav-link" href="db-list">
+                  <div className="sb-nav-link-icon"><i className="fas fa-columns" /></div>
+                  DB Connection List
+                </a>
+              </div>
+              <div className="nav">
                 <div className="sb-sidenav-menu-heading">MENU</div>
                 <a className="nav-link" href="/">
                   <div className="sb-nav-link-icon"><i className="fas fa-tachometer-alt" /></div>

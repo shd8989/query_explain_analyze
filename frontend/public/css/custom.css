@@ -1,6 +1,10 @@
 .warning_font {
-    color: red;
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: left;
-  }
+  color: red;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+.radio_btn {
+  text-align: left;
+}
