@@ -100,8 +100,21 @@ app.post(api_context + '/multi-query', (req) => {
             let query = data[i];
             client.query(query)
             .then((res) => {
-                client.query(insertQuery, [dbSeq, query, Object.values(res.rows[0])[0], 'Success', ''])
-                .catch((e) => console.error(e.stack));
+                if(res.rows.length == 1) {
+                    client.query(insertQuery, [dbSeq, query, Object.values(res.rows[0])[0], 'Success', ''])
+                    .catch((e) => console.error(e.stack));
+                } else if(res.rows.length > 1) {
+                    var multiRes = '';
+                    for(var i=0; i<res.rows.length; i++) {
+                        if(i < res.rows.length-1 ) {
+                            multiRes += Object.values(res.rows[i])[0] + '\n';
+                        } else if(i == res.rows.length-1 ) {
+                            multiRes += Object.values(res.rows[i])[0];
+                        }
+                    }
+                    client.query(insertQuery, [dbSeq, query, multiRes, 'Success', ''])
+                    .catch((e) => console.error(e.stack));
+                }
             })
             .catch((e) => {
                 client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
