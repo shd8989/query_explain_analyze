@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const DbCreate = () => {
   const [nickname, setNickname] = useState('');
-  const [dbHost, setDbHost] = useState('');
+  const [dbHost, setDbHost] = useState('127.0.0.1');
   const [dbPort, setDbPort] = useState(5432);
   const [dbName, setDbName] = useState('postgres');
   const [dbUser, setDbUser] = useState('');

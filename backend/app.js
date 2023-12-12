@@ -1,7 +1,12 @@
 const express = require('express');
+const fs = require('fs');
+const readline = require('readline');
+const { Pool } = require("pg");
+require("dotenv").config();
 
 const app = express();
 const api_context = '/api/v1'
+const filename = '.env'
 
 app.set('port', process.env.PORT || 3001);
 
@@ -17,13 +22,12 @@ app.listen(app.get('port'), ()=>{
     console.log(app.get('port'), '번 포트에서 대기 중')
 });
 
-const { Pool } = require("pg");
 const pool = new Pool({
-    user: "hdseo",
-    host: "127.0.0.1",
-    database: "postgres",
-    password: "1234",
-    port: 5430,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_USER_PW
 });
 
 app.get('/', (req, res) => {
@@ -47,6 +51,7 @@ app.get(api_context + '/db-conn', (req, res) => {
     pool.on('end', function() {client.end();});
 });
 
+// analyze query
 app.get(api_context + '/query-list', (req, res) => {
     pool.connect(function(err) {
         if(err) {
@@ -124,29 +129,36 @@ app.get(api_context + '/db-list', (req, res) => {
     pool.on('end', function() {client.end();});
 });
 
+// database
 app.post(api_context + '/createdb', (req) => {
     const {nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn} = req.body;
-    const newPool = new Pool({
-        host: dbHost,
-        port: dbPort,
-        database: dbName,
-        user: dbUser,
-        password: dbUserPw
-    });
-    newPool.connect(function(err, client) {
-        if(err) {
-            console.log('connection error', err);
-        }
-        const insertQuery = "INSERT INTO tb_databse (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
-        client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
-        .then((res) => {
-            console.log('success insert database information');
-        })
-        .catch((e) => {
-            console.error(e.stack);
+    if(resultDbYn === 'T') {
+        pool.connect(function(err, client) {
+            if(err) {
+                console.log('connection error', err);
+            }
+            const insertQuery = "INSERT INTO tb_databse (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
+            client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
+            .then((res) => {
+                console.log('success insert database information');
+            })
+            .catch((e) => {
+                console.error(e.stack);
+            });
         });
-    });
-    newPool.on('end', function() {client.end();});
+        pool.on('end', function() {client.end();});
+    } else if(resultDbYn === 'S') {
+        try {
+            var fileContents = 'DB_HOST=' + dbHost + '\n';
+                fileContents = fileContents + 'DB_PORT=' + dbPort + '\n';
+                fileContents = fileContents + 'DB_NAME=' + dbName + '\n';
+                fileContents = fileContents + 'DB_USER=' + dbUser + '\n';
+                fileContents = fileContents + 'DB_USER_PW=' + dbUserPw;
+            fs.writeFileSync(filename, fileContents);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 });
 
 app.get(api_context + '/db-conn-info', (req, res) => {
