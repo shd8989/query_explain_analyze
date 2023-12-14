@@ -70,15 +70,15 @@ app.get(api_context + '/query-list', (req, res) => {
 });
 
 app.post(api_context + '/single-query', (req) => {
-    const {query, dbSeq} = req.body;
+    const {query, dbSeq, scenario} = req.body;
     pool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, now())";
+        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
         client.query(query)
         .then((res) => {
-            client.query(insertQuery, [dbSeq, query, Object.values(res.rows[0])[0], 'Success', ''])
+            client.query(insertQuery, [dbSeq, query, scenario, Object.values(res.rows[0])[0], 'Success', ''])
             .catch((e) => console.error(e.stack));
         })
         .catch((e) => {
@@ -90,18 +90,18 @@ app.post(api_context + '/single-query', (req) => {
 });
 
 app.post(api_context + '/multi-query', (req) => {
-    const {data, dbSeq} = req.body;
+    const {data, dbSeq, scenario} = req.body;
     pool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
         }
         for(var i=0; i<data.length; i++) {
-            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, now())";
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
             let query = data[i];
             client.query(query)
             .then((res) => {
                 if(res.rows.length == 1) {
-                    client.query(insertQuery, [dbSeq, query, Object.values(res.rows[0])[0], 'Success', ''])
+                    client.query(insertQuery, [dbSeq, query, scenario, Object.values(res.rows[0])[0], 'Success', ''])
                     .catch((e) => console.error(e.stack));
                 } else if(res.rows.length > 1) {
                     var multiRes = '';
@@ -112,12 +112,12 @@ app.post(api_context + '/multi-query', (req) => {
                             multiRes += Object.values(res.rows[i])[0];
                         }
                     }
-                    client.query(insertQuery, [dbSeq, query, multiRes, 'Success', ''])
+                    client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', ''])
                     .catch((e) => console.error(e.stack));
                 }
             })
             .catch((e) => {
-                client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
+                client.query(insertQuery, [dbSeq, query, scenario, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
                 .catch((e) => console.error(e.stack));
             });
         }
@@ -174,7 +174,7 @@ app.post(api_context + '/createdb', (req) => {
     }
 });
 
-app.get(api_context + '/db-conn-info', (req, res) => {
+app.get(api_context + '/dbconn-list', (req, res) => {
     pool.connect(function(err) {
         if(err) {
             console.log('connection error', err);

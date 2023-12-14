@@ -7,14 +7,17 @@ const QueryExecute = () => {
   const [text, setText] = useState('');
   const [multiQueries, setMultiQueries] = useState([]);
   const [dbSeq, setDbSeq] = useState('');
+  const [scenario, setScenario] = useState('');
 
   const execQuery = async () => {
     setText(text => text);
     setDbSeq(dbSeq => dbSeq);
-    if(text !== '' && dbSeq !== '') {
+    setScenario(scenario => scenario);
+    if(text !== '' && dbSeq !== '' && scenario !== '') {
       await axios.post('/api/v1/single-query', {
         query: text,
-        dbSeq: dbSeq
+        dbSeq: dbSeq,
+        scenario: scenario
       })
       .then(response => {console.log(response);});
     }
@@ -22,15 +25,17 @@ const QueryExecute = () => {
 
   const fileUpload = async () => {
     setMultiQueries(multiQueries => multiQueries);
-    if(multiQueries && dbSeq !== '') {
+    setScenario(scenario => scenario);
+    if(multiQueries && dbSeq !== '' && scenario !== '') {
       await axios.post('/api/v1/multi-query', {
         data: multiQueries,
-        dbSeq: dbSeq
+        dbSeq: dbSeq,
+        scenario: scenario
       })
       .then(response => {console.log(response);});
     }
   };
-
+  
   const fileChange = useCallback(async (e) => {
     if (e) {
       const file = e[0];
@@ -54,6 +59,10 @@ const QueryExecute = () => {
     setText(e.target.value);
   };
 
+  function scenarioChange(e) {
+    setScenario(e.target.value);
+  };
+
   useEffect(() => {
     execQuery();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,7 +84,10 @@ const QueryExecute = () => {
           <div className="row">
             <div className="col">
               <h1 className="mt-4">File upload with query</h1>
-              <Selectbox sendDataToParent={sendDataToParent} />
+              <Selectbox sendDataToParent={sendDataToParent} id={'dbList'} />
+              <div className="form-floating">
+                <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioMulti"></textarea>
+              </div>
               <input className="form-control" type="file" id="formFile" onChange={(e) => fileChange(e.target.files)} accept=".xlsx, .xls" />
               <div className="warning_font">(Warning) This only reads data from the first sheet.</div>
               <div className="col-xl-3 col-md-6">
@@ -86,7 +98,10 @@ const QueryExecute = () => {
             </div>
             <div className="col">
               <h1 className="mt-4">Execute a query</h1>
-              <Selectbox sendDataToParent={sendDataToParent} />
+              <Selectbox sendDataToParent={sendDataToParent} id={'dbList'} />
+              <div className="form-floating">
+                <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioSingle"></textarea>
+              </div>
               <div className="form-floating">
                 <textarea className="form-control" onChange={(e) => textChange(e)} id="floatingTextarea"></textarea>
               </div>
