@@ -130,7 +130,7 @@ app.get(api_context + '/db-list', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_databse ORDER BY db_seq desc";
+        const selectQuery = "SELECT * FROM tb_database ORDER BY db_seq desc";
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);
@@ -150,7 +150,7 @@ app.post(api_context + '/createdb', (req) => {
             if(err) {
                 console.log('connection error', err);
             }
-            const insertQuery = "INSERT INTO tb_databse (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
+            const insertQuery = "INSERT INTO tb_database (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
             client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
             .then((res) => {
                 console.log('success insert database information');
@@ -179,7 +179,7 @@ app.get(api_context + '/dbconn-list', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_databse";
+        const selectQuery = "SELECT * FROM tb_database";
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);
