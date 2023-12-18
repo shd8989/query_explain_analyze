@@ -27,7 +27,8 @@ const pool = new Pool({
     port: process.env.DB_PORT,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
-    password: process.env.DB_USER_PW
+    password: process.env.DB_USER_PW,
+    max: 20
 });
 
 app.get('/', (req, res) => {
@@ -53,20 +54,54 @@ app.get(api_context + '/db-conn', (req, res) => {
 
 // analyze query
 app.get(api_context + '/query-list', (req, res) => {
-    pool.connect(function(err) {
-        if(err) {
-            console.log('connection error', err);
-        }
-        const selectQuery = "SELECT * FROM tb_result_querytest ORDER BY query_seq desc";
-        pool.query(selectQuery, (err, response) => {
-            if(err != null) {
-                console.log(err);
+    if(req.query.test_scenario !== '' || req.query.db_seq !== '') {
+        pool.connect(function(err) {
+            if(err) {
+                console.log('connection error', err);
             }
-            data = response.rows;
-            res.send(data);
+            var cnt = 1;
+            const selectQuery = "SELECT * FROM tb_result_querytest WHERE 1=1 ";
+            let condition1 = " AND test_scenario = $";
+            let condition2 = " AND db_seq = $";
+            let conditions = "";
+            let values = [];
+            if(req.query.test_scenario !== undefined && req.query.test_scenario !== '') {
+                conditions = conditions + condition1 + cnt;
+                values.push(req.query.test_scenario);
+                cnt++;
+            }
+            if(req.query.db_seq !== undefined && req.query.db_seq !== '') {
+                conditions = conditions + condition2 + cnt;
+                values.push(req.query.db_seq);
+                cnt++;
+            }
+            const orderQuery = " ORDER BY query_seq desc";
+            const sql = selectQuery + conditions + orderQuery;
+            pool.query(sql, values, (err, response) => {
+                if(err != null) {
+                    console.log(err);
+                }
+                data = response.rows;
+                res.send(data);
+            });
         });
-    });
-    pool.on('end', function() {client.end();});
+        pool.on('end', function() {client.end();});
+    } else if(req.query.test_scenario === '' && req.query.db_seq === '') {
+        pool.connect(function(err) {
+            if(err) {
+                console.log('connection error', err);
+            }
+            const selectQuery = "SELECT * FROM tb_result_querytest ORDER BY query_seq desc";
+            pool.query(selectQuery, (err, response) => {
+                if(err != null) {
+                    console.log(err);
+                }
+                data = response.rows;
+                res.send(data);
+            });
+        });
+        pool.on('end', function() {client.end();});
+    }
 });
 
 app.post(api_context + '/single-query', (req) => {
@@ -180,6 +215,23 @@ app.get(api_context + '/dbconn-list', (req, res) => {
             console.log('connection error', err);
         }
         const selectQuery = "SELECT * FROM tb_database";
+        pool.query(selectQuery, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
+
+app.get(api_context + '/scenario-list', (req, res) => {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT distinct test_scenario as test_scenario FROM tb_result_querytest";
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);

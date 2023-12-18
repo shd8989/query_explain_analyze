@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import axios from 'axios';
 import Selectbox from '../common/Selectbox';
 import Pagination from '../common/Pagination';
@@ -23,6 +23,8 @@ function QueryRow({data}) {
 }
 
 const QueryPlanList = () => {
+  const [dbSeq, setDbSeq] = useState('');
+  const [testScenario, setTestScenario] = useState('');
   const [queryData, setQueryData] = useState([{
     query_seq: '',
     error_msg: '',
@@ -33,25 +35,45 @@ const QueryPlanList = () => {
     rst: ''
   }]);
 
+  const selectQuery = async (test_scenario, db_seq) => {
+    setDbSeq(dbSeq => dbSeq);
+    setTestScenario(testScenario => testScenario);
+    const response = await axios.get('/api/v1/query-list', {params: {test_scenario: test_scenario, db_seq: db_seq}})
+    const newQueryData = await response.data.map((rowData) => ({
+        query_seq: rowData.query_seq,
+        error_msg: rowData.error_msg,
+        execute_time: rowData.execute_time,
+        insert_dt: rowData.insert_dt,
+        query: rowData.query,
+        return_data: rowData.return_data,
+        rst: rowData.rst
+      })
+    )
+    // setQueryData(queryData.concat(newQueryData))
+    // setQueryData([...queryData, queryDataTemp]);
+    return newQueryData;
+  };
+
   useEffect(() => {
-    const selectQuery = async () => {
-      const response = await axios.get('/api/v1/query-list', {})
-      const newQueryData = await response.data.map((rowData) => ({
-          query_seq: rowData.query_seq,
-          error_msg: rowData.error_msg,
-          execute_time: rowData.execute_time,
-          insert_dt: rowData.insert_dt,
-          query: rowData.query,
-          return_data: rowData.return_data,
-          rst: rowData.rst
-        })
-      )
-      // setQueryData(queryData.concat(newQueryData))
-      // setQueryData([...queryData, queryDataTemp]);
-      return newQueryData;
-    };
+    // const selectQuery = async (param1) => {
+    //   const response = await axios.get('/api/v1/query-list', {})
+    //   const newQueryData = await response.data.map((rowData) => ({
+    //       query_seq: rowData.query_seq,
+    //       error_msg: rowData.error_msg,
+    //       execute_time: rowData.execute_time,
+    //       insert_dt: rowData.insert_dt,
+    //       query: rowData.query,
+    //       return_data: rowData.return_data,
+    //       rst: rowData.rst
+    //     })
+    //   )
+    //   // setQueryData(queryData.concat(newQueryData))
+    //   // setQueryData([...queryData, queryDataTemp]);
+    //   return newQueryData;
+    // };
 //    selectQuery().then(res => setQueryData(queryData.concat(res)));
-    selectQuery().then(res => setQueryData(res));
+    selectQuery('', '').then(res => setQueryData(res));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,7 +82,19 @@ const QueryPlanList = () => {
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const currentRecords = queryData.slice(indexOfFirstRecord, indexOfLastRecord);
-  const nPages = Math.ceil(queryData.length / recordsPerPage)
+  const nPages = Math.ceil(queryData.length / recordsPerPage);
+
+  const sendDataToParent = useCallback((item, selectType) => {
+    if(selectType === 'scenario') {
+      setTestScenario(item);
+      // db_seq와 test_scenario가 set 되어야하는데 안됨
+      selectQuery(item, '').then(res => setQueryData(res));
+    } else if(selectType === 'db') {
+      setDbSeq(item);
+      selectQuery('', item).then(res => setQueryData(res));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -68,21 +102,11 @@ const QueryPlanList = () => {
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col">
-              <Selectbox />
+              <Selectbox sendDataToParent={sendDataToParent} id={'scenarioList'} />
             </div>
             <div className="col">
-              <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                <option value="0">Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-              <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                <option value="0">Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
+              <Selectbox sendDataToParent={sendDataToParent} id={'dbList'} />
+              <Selectbox sendDataToParent={sendDataToParent} id={'dbList'} />
             </div>
           </div>
           <div className="row">
