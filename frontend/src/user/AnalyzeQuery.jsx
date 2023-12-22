@@ -148,7 +148,11 @@ const AnalyzeQuery = () => {
             </div>
           </div>
         </div>
-        {activeTab === "tab1" ? <CompareQuery data={compareQuery} /> : activeTab === "tab2" ? <QueryPlanText /> : <QueryPlanView /> }
+        {
+          activeTab === "tab1" ? <CompareQuery data={compareQuery} /> : 
+          activeTab === "tab2" ? <QueryPlanText data={compareQuery} /> : 
+          <QueryPlanView data={compareQuery} />
+        }
       </main>
     </>
   );

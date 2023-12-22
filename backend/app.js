@@ -347,3 +347,21 @@ app.get(api_context + '/dbconn-list', (req, res) => {
         pool.on('end', function() {client.end();});
     }
 });
+
+app.get(api_context + '/query-plan', (req, res) => {
+    console.log(req.query)
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const explainAnalyze = "EXPLAIN ANALYZE ";
+        pool.query(explainAnalyze + req.query.query, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
