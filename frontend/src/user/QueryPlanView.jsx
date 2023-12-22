@@ -23,4 +23,4 @@ const QueryPlanView = () => {
     );
 };
 
-export default QueryPlanView
+export default React.memo(QueryPlanView);
