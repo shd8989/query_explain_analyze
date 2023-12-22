@@ -28,7 +28,8 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_USER_PW,
-    max: 20
+    max: 20,
+    idleTimeoutMillis: 1000
 });
 
 app.get('/', (req, res) => {
@@ -54,54 +55,69 @@ app.get(api_context + '/db-conn', (req, res) => {
 
 // analyze query
 app.get(api_context + '/query-list', (req, res) => {
-    if(req.query.test_scenario !== '' || req.query.db_seq !== '') {
-        pool.connect(function(err) {
-            if(err) {
-                console.log('connection error', err);
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT * FROM tb_result_querytest ";
+        const conditions = "WHERE db_seq = $1 ";
+        const orderQuery = "ORDER BY query_seq desc";
+        const sql = selectQuery + (req.query.dbSeq !== '' ? conditions : '') + orderQuery;
+        pool.query(sql, (req.query.dbSeq !== '' ? [req.query.dbSeq] : ''), (err, response) => {
+            if(err != null) {
+                console.log(err);
             }
-            var cnt = 1;
-            const selectQuery = "SELECT * FROM tb_result_querytest WHERE 1=1 ";
-            let condition1 = " AND test_scenario = $";
-            let condition2 = " AND db_seq = $";
-            let conditions = "";
-            let values = [];
-            if(req.query.test_scenario !== undefined && req.query.test_scenario !== '') {
-                conditions = conditions + condition1 + cnt;
-                values.push(req.query.test_scenario);
-                cnt++;
-            }
-            if(req.query.db_seq !== undefined && req.query.db_seq !== '') {
-                conditions = conditions + condition2 + cnt;
-                values.push(req.query.db_seq);
-                cnt++;
-            }
-            const orderQuery = " ORDER BY query_seq desc";
-            const sql = selectQuery + conditions + orderQuery;
-            pool.query(sql, values, (err, response) => {
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+});
+
+app.get(api_context + '/select-one-query', (req, res) => {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT a.test_scenario, b.nickname, a.query_seq, a.query "
+            + "FROM tb_result_querytest a "
+            + "JOIN tb_database b ON a.db_seq = b.db_seq "
+            + "WHERE 1=1 "
+        let conditions = '';
+        const params = [];
+        let cnt = 1;
+        if(req.query.test_scenario !== '') {
+            conditions += ' AND a.test_scenario = $' + cnt;
+            params.push(req.query.test_scenario);
+            cnt++;
+        }
+        if(req.query.db_seq !== '' && req.query.db_seq !== '0') {
+            conditions += ' AND b.db_seq = $' + cnt;
+            params.push(Number(req.query.db_seq));
+            cnt++;
+        }
+        if(req.query.query_seq !== '' && req.query.query_seq !== '0') {
+            conditions += ' AND a.query_seq = $' + cnt;
+            params.push(Number(req.query.query_seq));
+            cnt++;
+        }
+        
+        const sql = selectQuery + conditions;
+        if(req.query.test_scenario !== '' && req.query.db_seq !== '' && req.query.db_seq !== '0' && req.query.query_seq !== '' && req.query.query_seq !== '0') {
+            // pool.query(sql, (cnt > 1 ? [params] : ''), (err, response) => {
+            pool.query(sql, [req.query.test_scenario, Number(req.query.db_seq), Number(req.query.query_seq)], (err, response) => {
                 if(err != null) {
                     console.log(err);
                 }
                 data = response.rows;
+                console.log('--- data')
+                console.log(data)
+                console.log('data ---')
                 res.send(data);
             });
-        });
-        pool.on('end', function() {client.end();});
-    } else if(req.query.test_scenario === '' && req.query.db_seq === '') {
-        pool.connect(function(err) {
-            if(err) {
-                console.log('connection error', err);
-            }
-            const selectQuery = "SELECT * FROM tb_result_querytest ORDER BY query_seq desc";
-            pool.query(selectQuery, (err, response) => {
-                if(err != null) {
-                    console.log(err);
-                }
-                data = response.rows;
-                res.send(data);
-            });
-        });
-        pool.on('end', function() {client.end();});
-    }
+        }
+    });
+    pool.on('end', function() {client.end();});
 });
 
 app.post(api_context + '/single-query', (req) => {
@@ -209,12 +225,19 @@ app.post(api_context + '/createdb', (req) => {
     }
 });
 
-app.get(api_context + '/dbconn-list', (req, res) => {
+app.get(api_context + '/select-scenario', (req, res) => {
     pool.connect(function(err) {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_database";
+        const selectQuery = "SELECT a.test_scenario, array_agg(a.db_seq) as db_seq "
+            + "FROM ( "
+            + "SELECT test_scenario, db_seq "
+            + "FROM tb_result_querytest "
+            + "GROUP BY test_scenario, db_seq "
+            + "ORDER BY test_scenario asc "
+            + ") a "
+            + "GROUP BY a.test_scenario"
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);
@@ -226,12 +249,14 @@ app.get(api_context + '/dbconn-list', (req, res) => {
     pool.on('end', function() {client.end();});
 });
 
-app.get(api_context + '/scenario-list', (req, res) => {
+app.get(api_context + '/select-db', (req, res) => {
     pool.connect(function(err) {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT distinct test_scenario as test_scenario FROM tb_result_querytest";
+        const selectQuery = "SELECT nickname, db_seq "
+            + "FROM tb_database "
+            + "ORDER BY nickname asc"
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
                 console.log(err);
@@ -241,4 +266,84 @@ app.get(api_context + '/scenario-list', (req, res) => {
         });
     });
     pool.on('end', function() {client.end();});
+});
+
+app.get(api_context + '/select-query', (req, res) => {
+    // if(req.query.querySeq !== '' && req.query.querySeq !== undefined) {
+    //     pool.connect(function(err) {
+    //         if(err) {
+    //             console.log('connection error', err);
+    //         }
+    //         const selectQuery = "SELECT * FROM tb_result_querytest WHERE db_seq = $1 ORDER BY query_seq desc";
+    //         pool.query(selectQuery, [req.query.dbSeq], (err, response) => {
+    //             if(err != null) {
+    //                 console.log(err);
+    //             }
+    //             data = response.rows;
+    //             res.send(data);
+    //         });
+    //     });
+    //     pool.on('end', function() {client.end();}); 
+    // } else if(req.query.querySeq === undefined) {
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const selectQuery = "SELECT query, array_agg(a.query_seq) as query_seq "
+            + "FROM ( "
+            + "SELECT query, query_seq "
+            + "FROM tb_result_querytest "
+            + "GROUP BY query, query_seq "
+            + "ORDER BY query_seq "
+            + ") a "
+            + "GROUP BY a.query";
+        pool.query(selectQuery, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
+    // }
+});
+
+app.get(api_context + '/dbconn-list', (req, res) => {
+    if(req.query.pDbSeq !== undefined) {
+        const arr = req.query.pDbSeq.split(',').map(Number);
+        console.log(req.query.pDbSeq);
+        console.log(arr)
+        pool.connect(function(err) {
+            if(err) {
+                console.log('connection error', err);
+            }
+            const selectQuery = "SELECT * FROM tb_database WHERE db_seq = any($1::int[])";
+            // const selectQuery = "SELECT * FROM tb_database WHERE db_seq = $1";
+            pool.query(selectQuery, [req.query.pDbSeq[0]], (err, response) => {
+                if(err != null) {
+                    console.log(err);
+                }
+                data = response.rows;
+                console.log(data)
+                res.send(data);
+            });
+        });
+        pool.on('end', function() {client.end();});
+    } else {
+        pool.connect(function(err) {
+            if(err) {
+                console.log('connection error', err);
+            }
+            const selectQuery = "SELECT * FROM tb_database";
+            pool.query(selectQuery, (err, response) => {
+                if(err != null) {
+                    console.log(err);
+                }
+                data = response.rows;
+                res.send(data);
+            });
+        });
+        pool.on('end', function() {client.end();});
+    }
 });

@@ -23,4 +23,4 @@ const QueryPlanText = () => {
     );
 };
 
-export default QueryPlanText
+export default React.memo(QueryPlanText);

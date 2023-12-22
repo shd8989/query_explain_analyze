@@ -1,83 +1,65 @@
 import React from 'react'
 
-const CompareQuery = () => {
-    return (
-      <>
-        <main>
-          <div className="container-fluid px-4">
-            <div className="row">
-              <div className="col">
-                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                  <option value="0">Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-              </div>
-              <div className="col">
-                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                  <option value="0">Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                  <option value="0">Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-              </div>
-              <div className="col">
-                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                  <option value="0">Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-                <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                  <option value="0">Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col">
-                <div className="text-nowrap">
-                  This text should overflow the parent.
+const CompareQuery = (data) => {
+  return (
+    <>
+      <main>
+        <div className="container-fluid px-4">
+          <div className="row">
+            <div className="col">
+              <div className="text-nowrap">
+                <div>
+                  Scenario : {data.data.first !== undefined ? data.data.first.test_scenario : ''}
                 </div>
-              </div>
-              <div className="col">
-                <div className="text-nowrap">
-                  This text should overflow the parent.
+                <div>
+                  DB Connection : {data.data.first !== undefined ? data.data.first.nickname : ''}
+                </div>
+                <div>
+                  Query Number : {data.data.first !== undefined ? data.data.first.query_seq : ''}
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col">
-                <div className="text-nowrap">
-                  This text should overflow the parent.
+            <div className="col">
+              <div className="text-nowrap">
+                <div>
+                  Scenario : {data.data.second !== undefined ? data.data.second.test_scenario : ''}
                 </div>
-              </div>
-              <div className="col">
-                <div className="text-nowrap">
-                  This text should overflow the parent.
+                <div>
+                  DB Connection : {data.data.second !== undefined ? data.data.second.nickname : ''}
                 </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-xl-3 col-md-6">
-                <div className="card bg-primary text-white mb-4">
-                  <div className="card-body">Success Card</div>
+                <div>
+                  Query Number : {data.data.second !== undefined ? data.data.second.query_seq : ''}
                 </div>
               </div>
             </div>
           </div>
-        </main>
-      </>
-    );
+          <div className="row">
+            <div className="col">
+              <div className="text-nowrap">
+                <div>
+                  {data.data.first !== undefined ? data.data.first.query : ''}
+                </div>
+              </div>
+            </div>
+            <div className="col">
+              <div className="text-nowrap">
+                <div>
+                  {data.data.second !== undefined ? data.data.second.query : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-xl-3 col-md-6">
+              <div className="card bg-primary text-white mb-4">
+                <div className="card-body">Success Card</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
 };
 
-export default CompareQuery
+export default React.memo(CompareQuery);

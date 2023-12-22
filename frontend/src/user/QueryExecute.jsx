@@ -19,7 +19,7 @@ const QueryExecute = () => {
         dbSeq: dbSeq,
         scenario: scenario
       })
-      .then(response => {console.log(response);});
+      .then(response => console.log(response));
     }
   };
 
@@ -73,8 +73,8 @@ const QueryExecute = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sendDataToParent = useCallback((item) => {
-    setDbSeq(item);
+  const sendDataToParent = useCallback((data, selectType) => {
+    setDbSeq(data);
   }, []);
 
   return (
@@ -84,7 +84,7 @@ const QueryExecute = () => {
           <div className="row">
             <div className="col">
               <h1 className="mt-4">File upload with query</h1>
-              <Selectbox sendDataToParent={sendDataToParent} id={'dbList'} />
+              <Selectbox sendDataToParent={sendDataToParent} selectType={'db'} />
               <div className="form-floating">
                 <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioMulti"></textarea>
               </div>
@@ -98,7 +98,7 @@ const QueryExecute = () => {
             </div>
             <div className="col">
               <h1 className="mt-4">Execute a query</h1>
-              <Selectbox sendDataToParent={sendDataToParent} id={'dbList'} />
+              <Selectbox sendDataToParent={sendDataToParent} selectType={'db'} />
               <div className="form-floating">
                 <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioSingle"></textarea>
               </div>

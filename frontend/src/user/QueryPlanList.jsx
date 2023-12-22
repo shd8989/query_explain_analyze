@@ -139,4 +139,4 @@ const QueryPlanList = () => {
   );
 };
 
-export default QueryPlanList
+export default React.memo(QueryPlanList);
