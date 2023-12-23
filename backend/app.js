@@ -28,7 +28,7 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_USER_PW,
-    max: 20,
+    max: 30,
     idleTimeoutMillis: 1000
 });
 
@@ -101,19 +101,20 @@ app.get(api_context + '/select-one-query', (req, res) => {
             params.push(Number(req.query.query_seq));
             cnt++;
         }
-        
         const sql = selectQuery + conditions;
+        
         if(req.query.test_scenario !== '' && req.query.db_seq !== '' && req.query.db_seq !== '0' && req.query.query_seq !== '' && req.query.query_seq !== '0') {
             // pool.query(sql, (cnt > 1 ? [params] : ''), (err, response) => {
             pool.query(sql, [req.query.test_scenario, Number(req.query.db_seq), Number(req.query.query_seq)], (err, response) => {
                 if(err != null) {
                     console.log(err);
                 }
-                data = response.rows;
-                console.log('--- data')
-                console.log(data)
-                console.log('data ---')
-                res.send(data);
+                if(response.rowCount > 0) {
+                    data = response.rows;
+                    res.send(data);
+                } else {
+                    res.send('-1');
+                }
             });
         }
     });
@@ -346,4 +347,22 @@ app.get(api_context + '/dbconn-list', (req, res) => {
         });
         pool.on('end', function() {client.end();});
     }
+});
+
+app.get(api_context + '/query-plan', (req, res) => {
+    console.log(req.query)
+    pool.connect(function(err) {
+        if(err) {
+            console.log('connection error', err);
+        }
+        const explainAnalyze = "EXPLAIN ANALYZE ";
+        pool.query(explainAnalyze + req.query.query, (err, response) => {
+            if(err != null) {
+                console.log(err);
+            }
+            data = response.rows;
+            res.send(data);
+        });
+    });
+    pool.on('end', function() {client.end();});
 });
