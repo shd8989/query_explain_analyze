@@ -81,36 +81,41 @@ const AnalyzeQuery = () => {
       
       if(params.params !== undefined && (params.params.test_scenario !== '' && params.params.db_seq !== 0 && params.params.query_seq !== 0)) {
         const response = await axios.get('/api/v1/select-one-query', params)
-        const newData = await response.data.map((rowData) => ({
+
+        if(response.data.length > 0) {
+          const newData = await response.data.map((rowData) => ({
             test_scenario: rowData.test_scenario,
             nickname: rowData.nickname,
             query_seq: rowData.query_seq,
             query: rowData.query
-          })
-        )
+            })
+          )
         
         if(odnNumber === 'first') {
-            setCompareQuery((preCompareQuery) => ({
-              ...preCompareQuery,
-              first: {
-                test_scenario: newData[0].test_scenario,
-                nickname: newData[0].nickname,
-                query_seq: newData[0].query_seq,
-                query: newData[0].query
-              }
-            }));
-          } else if(odnNumber === 'second') {
-            setCompareQuery((preCompareQuery) => ({
-              ...preCompareQuery,
-              second: {
-                test_scenario: newData[0].test_scenario,
-                nickname: newData[0].nickname,
-                query_seq: newData[0].query_seq,
-                query: newData[0].query
-              }
-            }));
+              setCompareQuery((preCompareQuery) => ({
+                ...preCompareQuery,
+                first: {
+                  test_scenario: newData[0].test_scenario,
+                  nickname: newData[0].nickname,
+                  query_seq: newData[0].query_seq,
+                  query: newData[0].query
+                }
+              }));
+            } else if(odnNumber === 'second') {
+              setCompareQuery((preCompareQuery) => ({
+                ...preCompareQuery,
+                second: {
+                  test_scenario: newData[0].test_scenario,
+                  nickname: newData[0].nickname,
+                  query_seq: newData[0].query_seq,
+                  query: newData[0].query
+                }
+              }));
+            }
+            return newData;
+          } else if(response.data === -1) {
+            alert('시나리오, DB정보, Query정보가 올바르지 않습니다. 다시 선택해주세요');
           }
-        return newData;
       };
     }
     query_info();
