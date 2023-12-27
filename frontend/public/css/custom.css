@@ -8,3 +8,7 @@
 .radio_btn {
   text-align: left;
 }
+
+.mouse_hover {
+  cursor: pointer;
+}

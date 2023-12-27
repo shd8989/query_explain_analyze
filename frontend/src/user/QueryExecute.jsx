@@ -99,7 +99,7 @@ const QueryExecute = () => {
               <input className="form-control" type="file" id="formFile" onChange={(e) => fileChange(e.target.files)} accept=".xlsx, .xls" />
               <div className="warning_font">(Warning) This only reads data from the first sheet.</div>
               <div className="col-xl-3 col-md-6">
-                <div className="card bg-primary text-white mb-4">
+                <div className="card bg-primary text-white mb-4 mouse_hover">
                   <div className="card-body" onClick={fileUpload}>Execute Multi Queries</div>
                 </div>
               </div>
@@ -114,7 +114,7 @@ const QueryExecute = () => {
                 <textarea className="form-control" onChange={(e) => textChange(e)} id="floatingTextarea"></textarea>
               </div>
               <div className="col-xl-3 col-md-6">
-                <div className="card bg-primary text-white mb-4">
+                <div className="card bg-primary text-white mb-4 mouse_hover">
                   <div className="card-body" onClick={execQuery}>Execute Single Query</div>
                 </div>
               </div>
