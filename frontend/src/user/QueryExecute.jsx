@@ -20,8 +20,9 @@ const QueryExecute = () => {
         scenario: scenario
       })
       .then(response => {
-        console.log(response);
-        alert('입력한 쿼리를 저장하였습니다.');
+        if(response.status === 200) {
+          alert('입력한 쿼리를 저장하였습니다.');
+        }
       });
     }
   };
@@ -36,8 +37,9 @@ const QueryExecute = () => {
         scenario: scenario
       })
       .then(response => {
-        console.log(response);
-        alert('파일에 저장된 쿼리를 저장하였습니다.');
+        if(response.status === 200) {
+          alert('파일에 저장된 쿼리를 저장하였습니다.');
+        }
       });
     }
   };

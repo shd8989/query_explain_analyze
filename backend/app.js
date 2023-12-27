@@ -121,7 +121,7 @@ app.get(api_context + '/select-one-query', (req, res) => {
     pool.on('end', function() {client.end();});
 });
 
-app.post(api_context + '/single-query', (req) => {
+app.post(api_context + '/single-query', (req, res) => {
     const {query, dbSeq, scenario} = req.body;
     pool.connect(function(err, client) {
         if(err) {
@@ -129,9 +129,10 @@ app.post(api_context + '/single-query', (req) => {
         }
         const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
         client.query(query)
-        .then((res) => {
-            client.query(insertQuery, [dbSeq, query, scenario, Object.values(res.rows[0])[0], 'Success', ''])
+        .then((response) => {
+            client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
             .catch((e) => console.error(e.stack));
+            res.send(200);
         })
         .catch((e) => {
             client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
@@ -141,7 +142,7 @@ app.post(api_context + '/single-query', (req) => {
     pool.on('end', function() {client.end();});
 });
 
-app.post(api_context + '/multi-query', (req) => {
+app.post(api_context + '/multi-query', (req, res) => {
     const {data, dbSeq, scenario} = req.body;
     pool.connect(function(err, client) {
         if(err) {
@@ -151,21 +152,23 @@ app.post(api_context + '/multi-query', (req) => {
             const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
             let query = data[i];
             client.query(query)
-            .then((res) => {
-                if(res.rows.length == 1) {
-                    client.query(insertQuery, [dbSeq, query, scenario, Object.values(res.rows[0])[0], 'Success', ''])
+            .then((response) => {
+                if(response.rows.length == 1) {
+                    client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
                     .catch((e) => console.error(e.stack));
-                } else if(res.rows.length > 1) {
+                    res.send(200);
+                } else if(response.rows.length > 1) {
                     var multiRes = '';
-                    for(var i=0; i<res.rows.length; i++) {
-                        if(i < res.rows.length-1 ) {
-                            multiRes += Object.values(res.rows[i])[0] + '\n';
-                        } else if(i == res.rows.length-1 ) {
-                            multiRes += Object.values(res.rows[i])[0];
+                    for(var i=0; i<response.rows.length; i++) {
+                        if(i < response.rows.length-1 ) {
+                            multiRes += Object.values(response.rows[i])[0] + '\n';
+                        } else if(i == response.rows.length-1 ) {
+                            multiRes += Object.values(response.rows[i])[0];
                         }
                     }
                     client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', ''])
                     .catch((e) => console.error(e.stack));
+                    res.send(200);
                 }
             })
             .catch((e) => {
