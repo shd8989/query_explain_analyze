@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import Selectbox from '../common/Selectbox'
+import {Selectbox, Selectbox2, Selectbox3} from '../common/Selectbox'
 
 const QueryExecute = () => {
   const [text, setText] = useState('');
@@ -19,7 +19,10 @@ const QueryExecute = () => {
         dbSeq: dbSeq,
         scenario: scenario
       })
-      .then(response => console.log(response));
+      .then(response => {
+        console.log(response);
+        alert('입력한 쿼리를 저장하였습니다.');
+      });
     }
   };
 
@@ -32,7 +35,10 @@ const QueryExecute = () => {
         dbSeq: dbSeq,
         scenario: scenario
       })
-      .then(response => {console.log(response);});
+      .then(response => {
+        console.log(response);
+        alert('파일에 저장된 쿼리를 저장하였습니다.');
+      });
     }
   };
   
@@ -73,7 +79,7 @@ const QueryExecute = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sendDataToParent = useCallback((data, selectType) => {
+  const sendDataToParent = useCallback((data) => {
     setDbSeq(data);
   }, []);
 
@@ -84,7 +90,7 @@ const QueryExecute = () => {
           <div className="row">
             <div className="col">
               <h1 className="mt-4">File upload with query</h1>
-              <Selectbox sendDataToParent={sendDataToParent} selectType={'db'} />
+              <Selectbox2 sendDataToParent={sendDataToParent} ordinalNumber={'-1'} scenario={scenario} />
               <div className="form-floating">
                 <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioMulti"></textarea>
               </div>
@@ -98,7 +104,7 @@ const QueryExecute = () => {
             </div>
             <div className="col">
               <h1 className="mt-4">Execute a query</h1>
-              <Selectbox sendDataToParent={sendDataToParent} selectType={'db'} />
+              <Selectbox2 sendDataToParent={sendDataToParent} ordinalNumber={'-1'} scenario={scenario} />
               <div className="form-floating">
                 <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioSingle"></textarea>
               </div>
