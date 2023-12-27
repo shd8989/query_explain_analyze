@@ -49,13 +49,6 @@ const CompareQuery = (data) => {
               </div>
             </div>
           </div>
-          <div className="row">
-            <div className="col-xl-3 col-md-6">
-              <div className="card bg-primary text-white mb-4">
-                <div className="card-body">Success Card</div>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
     </>

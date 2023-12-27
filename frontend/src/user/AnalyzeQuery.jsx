@@ -3,7 +3,7 @@ import axios from 'axios';
 import CompareQuery from './CompareQuery';
 import QueryPlanText from './QueryPlanText';
 import QueryPlanView from './QueryPlanView';
-import Selectbox from '../common/Selectbox';
+import {Selectbox, Selectbox2, Selectbox3} from '../common/Selectbox';
 
 const AnalyzeQuery = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -40,7 +40,7 @@ const AnalyzeQuery = () => {
     setActiveTab("tab3");
   };
 
-  const sendDataToParent = useCallback((data, selectType, ordinalNumber) => {
+  const sendDataToParent = useCallback((data, ordinalNumber) => {
     if(ordinalNumber === 'first') {
       setScenario1(preScenario => data);
       setOdnNumber(ordinalNumber);
@@ -50,7 +50,7 @@ const AnalyzeQuery = () => {
     }
   }, [scenario1, scenario2]);
 
-  const sendDataToParent2 = useCallback((data, selectType, ordinalNumber) => {
+  const sendDataToParent2 = useCallback((data, ordinalNumber) => {
     if(ordinalNumber === 'first') {
       setDbSeq1(preDbSeq => data);
       setOdnNumber(ordinalNumber);
@@ -60,7 +60,7 @@ const AnalyzeQuery = () => {
     }
   }, [dbSeq1, dbSeq2]);
 
-  const sendDataToParent3 = useCallback((data, selectType, ordinalNumber) => {
+  const sendDataToParent3 = useCallback((data, ordinalNumber) => {
     if(ordinalNumber === 'first') {
       setQuerySeq1(preQuerySeq => data);
       setOdnNumber(ordinalNumber);
@@ -140,16 +140,16 @@ const AnalyzeQuery = () => {
           </div>
           <div className="row">
             <div className="col">
-              <Selectbox sendDataToParent={sendDataToParent} selectType={'scenario'} ordinalNumber={'first'} />
-              <Selectbox sendDataToParent={sendDataToParent} selectType={'scenario'} ordinalNumber={'second'} />
+              <Selectbox sendDataToParent={sendDataToParent} ordinalNumber={'first'} />
+              <Selectbox sendDataToParent={sendDataToParent} ordinalNumber={'second'} />
             </div>
             <div className="col">
-              <Selectbox sendDataToParent={sendDataToParent2} selectType={'db'} ordinalNumber={'first'} />
-              <Selectbox sendDataToParent={sendDataToParent2} selectType={'db'} ordinalNumber={'second'} />
+              <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'first'} scenario={scenario1} />
+              <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'second'} scenario={scenario2} />
             </div>
             <div className="col">
-              <Selectbox sendDataToParent={sendDataToParent3} selectType={'query'} ordinalNumber={'first'} />
-              <Selectbox sendDataToParent={sendDataToParent3} selectType={'query'} ordinalNumber={'second'} />
+              <Selectbox3 sendDataToParent={sendDataToParent3} ordinalNumber={'first'} dbSeq={dbSeq1} />
+              <Selectbox3 sendDataToParent={sendDataToParent3} ordinalNumber={'second'} dbSeq={dbSeq2} />
             </div>
           </div>
         </div>

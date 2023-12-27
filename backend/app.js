@@ -255,10 +255,13 @@ app.get(api_context + '/select-db', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT nickname, db_seq "
-            + "FROM tb_database "
+        const selectQuery = "SELECT b.db_seq, b.nickname "
+            + "FROM tb_result_querytest a "
+            + "JOIN tb_database b ON a.db_seq = b.db_seq "
+            + "WHERE a.test_scenario = $1 "
+            + "GROUP BY b.db_seq, b.nickname "
             + "ORDER BY nickname asc"
-        pool.query(selectQuery, (err, response) => {
+        pool.query(selectQuery, [req.query.test_scenario], (err, response) => {
             if(err != null) {
                 console.log(err);
             }
@@ -270,51 +273,34 @@ app.get(api_context + '/select-db', (req, res) => {
 });
 
 app.get(api_context + '/select-query', (req, res) => {
-    // if(req.query.querySeq !== '' && req.query.querySeq !== undefined) {
-    //     pool.connect(function(err) {
-    //         if(err) {
-    //             console.log('connection error', err);
-    //         }
-    //         const selectQuery = "SELECT * FROM tb_result_querytest WHERE db_seq = $1 ORDER BY query_seq desc";
-    //         pool.query(selectQuery, [req.query.dbSeq], (err, response) => {
-    //             if(err != null) {
-    //                 console.log(err);
-    //             }
-    //             data = response.rows;
-    //             res.send(data);
-    //         });
-    //     });
-    //     pool.on('end', function() {client.end();}); 
-    // } else if(req.query.querySeq === undefined) {
-    pool.connect(function(err) {
-        if(err) {
-            console.log('connection error', err);
-        }
-        const selectQuery = "SELECT query, array_agg(a.query_seq) as query_seq "
-            + "FROM ( "
-            + "SELECT query, query_seq "
-            + "FROM tb_result_querytest "
-            + "GROUP BY query, query_seq "
-            + "ORDER BY query_seq "
-            + ") a "
-            + "GROUP BY a.query";
-        pool.query(selectQuery, (err, response) => {
-            if(err != null) {
-                console.log(err);
+    if(req.query.db_seq !== undefined && req.query.db_seq !== '0'  && req.query.db_seq !== 0) {
+        pool.connect(function(err) {
+            if(err) {
+                console.log('connection error', err);
             }
-            data = response.rows;
-            res.send(data);
+            const selectQuery = "SELECT query_seq, query "
+                + "FROM tb_result_querytest "
+                + "WHERE db_seq = $1 "
+                + "ORDER BY query_seq desc";
+            pool.query(selectQuery, [req.query.db_seq], (err, response) => {
+                if(err != null) {
+                    console.log(err);
+                }
+                if(response.rowCount > 0) {
+                    data = response.rows;
+                    res.send(data);
+                } else {
+                    res.send('-1');
+                }
+            });
         });
-    });
-    pool.on('end', function() {client.end();});
-    // }
+        pool.on('end', function() {client.end();});
+    }
 });
 
 app.get(api_context + '/dbconn-list', (req, res) => {
     if(req.query.pDbSeq !== undefined) {
         const arr = req.query.pDbSeq.split(',').map(Number);
-        console.log(req.query.pDbSeq);
-        console.log(arr)
         pool.connect(function(err) {
             if(err) {
                 console.log('connection error', err);
@@ -326,7 +312,6 @@ app.get(api_context + '/dbconn-list', (req, res) => {
                     console.log(err);
                 }
                 data = response.rows;
-                console.log(data)
                 res.send(data);
             });
         });
@@ -350,7 +335,6 @@ app.get(api_context + '/dbconn-list', (req, res) => {
 });
 
 app.get(api_context + '/query-plan', (req, res) => {
-    console.log(req.query)
     pool.connect(function(err) {
         if(err) {
             console.log('connection error', err);
