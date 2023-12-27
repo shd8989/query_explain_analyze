@@ -39,10 +39,16 @@ const Selectbox2 = ({sendDataToParent, ordinalNumber, scenario}) => {
     nickname: '',
     db_seq: ''
   }]);
-
+  
   useEffect(() => {
     const db_info = async () => {
-      const response = await axios.get('/api/v1/select-db', {params: {test_scenario: scenario}})
+      let params = {};
+      if(ordinalNumber !== '-1' && scenario !== '') {
+        params = {};
+      } else {
+        params = {params: {test_scenario: scenario}};
+      }
+      const response = await axios.get('/api/v1/select-db', params)
       const newData = await response.data.map((rowData) => ({
           nickname: rowData.nickname,
           db_seq: rowData.db_seq
@@ -51,7 +57,7 @@ const Selectbox2 = ({sendDataToParent, ordinalNumber, scenario}) => {
       return newData;
     };
     db_info().then(res => setDb(res));
-  }, [scenario]);
+  }, []);
 
   const selectChange = (e) => {
     sendDataToParent(e.target.value, ordinalNumber);

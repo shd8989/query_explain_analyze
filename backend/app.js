@@ -255,13 +255,25 @@ app.get(api_context + '/select-db', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT b.db_seq, b.nickname "
+        let selectQuery = '';
+        let values = [];
+        if(req.query.test_scenario !== '') {
+            selectQuery = "SELECT b.db_seq, b.nickname "
             + "FROM tb_result_querytest a "
             + "JOIN tb_database b ON a.db_seq = b.db_seq "
             + "WHERE a.test_scenario = $1 "
             + "GROUP BY b.db_seq, b.nickname "
+            + "ORDER BY nickname asc";
+            values.push(req.query.test_scenario);
+        } else {
+
+        }
+        selectQuery = "SELECT b.db_seq, b.nickname "
+            + "FROM tb_result_querytest a "
+            + "JOIN tb_database b ON a.db_seq = b.db_seq "
+            + "GROUP BY b.db_seq, b.nickname "
             + "ORDER BY nickname asc"
-        pool.query(selectQuery, [req.query.test_scenario], (err, response) => {
+        pool.query(selectQuery, values, (err, response) => {
             if(err != null) {
                 console.log(err);
             }
