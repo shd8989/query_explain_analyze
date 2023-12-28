@@ -269,14 +269,11 @@ app.get(api_context + '/select-db', (req, res) => {
             + "ORDER BY nickname asc";
             values.push(req.query.test_scenario);
         } else {
-
+            selectQuery = "SELECT db_seq, nickname "
+            + "FROM tb_database "
+            + "ORDER BY nickname asc";
         }
-        selectQuery = "SELECT b.db_seq, b.nickname "
-            + "FROM tb_result_querytest a "
-            + "JOIN tb_database b ON a.db_seq = b.db_seq "
-            + "GROUP BY b.db_seq, b.nickname "
-            + "ORDER BY nickname asc"
-        pool.query(selectQuery, values, (err, response) => {
+        pool.query(selectQuery, (req.query.test_scenario !== '' ? [values] : []), (err, response) => {
             if(err != null) {
                 console.log(err);
             }

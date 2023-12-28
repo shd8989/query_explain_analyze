@@ -9,12 +9,12 @@ const Selectbox = ({sendDataToParent, ordinalNumber}) => {
 
   useEffect(() => {
     const scenario_info = async () => {
-      const response = await axios.get('/api/v1/select-scenario', {})
+      const response = await axios.get('/api/v1/select-scenario', {});
       const newData = await response.data.map((rowData) => ({
           test_scenario: rowData.test_scenario,
           db_seq: rowData.db_seq
         })
-      )
+      );
       return newData;
     };
     scenario_info().then(res => setScenario(res));
@@ -48,12 +48,12 @@ const Selectbox2 = ({sendDataToParent, ordinalNumber, scenario}) => {
       } else {
         params = {params: {test_scenario: scenario}};
       }
-      const response = await axios.get('/api/v1/select-db', params)
+      const response = await axios.get('/api/v1/select-db', params);
       const newData = await response.data.map((rowData) => ({
           nickname: rowData.nickname,
           db_seq: rowData.db_seq
         })
-      )
+      );
       return newData;
     };
     db_info().then(res => setDb(res));
@@ -79,21 +79,28 @@ const Selectbox3 = ({sendDataToParent, ordinalNumber, dbSeq}) => {
     query: ''
   }]);
 
+  const query_info = async () => {
+    let params = {};
+    if(ordinalNumber !== '-1' && dbSeq !== '') {
+      params = {params: {db_seq: dbSeq}};
+    } else {
+      params = {};
+    }
+    const response = await axios.get('/api/v1/select-query', params);
+    const newData = await response.data.map((rowData) => ({
+        query_seq: rowData.query_seq,
+        query: rowData.query
+      })
+    );
+    return newData;
+  };
+
   useEffect(() => {
-    const query_info = async () => {
-      const response = await axios.get('/api/v1/select-query', {params: {db_seq: dbSeq}})
-      const newData = await response.data.map((rowData) => ({
-          query_seq: rowData.query_seq,
-          query: rowData.query
-        })
-      )
-      return newData;
-    };
     query_info().then(res => setQuery(res));
   }, [dbSeq]);
 
   const selectChange = (e) => {
-    sendDataToParent(e.target.value, ordinalNumber)
+    sendDataToParent(e.target.value, ordinalNumber);
   };
 
   return (
