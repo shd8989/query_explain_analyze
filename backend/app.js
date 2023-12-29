@@ -352,12 +352,32 @@ app.get(api_context + '/query-plan', (req, res) => {
             console.log('connection error', err);
         }
         const explainAnalyze = "EXPLAIN ANALYZE ";
-        pool.query(explainAnalyze + req.query.query, (err, response) => {
+        var rst1 = '';
+        var rst2 = '';
+        pool.query(explainAnalyze + req.query.first_query + '; '
+                 + explainAnalyze + req.query.second_query, (err, response) => {
+            var multiRes = '';
+            for(var i=0; i<response[0].rows.length; i++) {
+                if(i < response[0].rows.length-1 ) {
+                    multiRes += Object.values(response[0].rows[i])[0] + '\n';
+                } else if(i == response[0].rows.length-1 ) {
+                    multiRes += Object.values(response[0].rows[i])[0];
+                }
+            }
+            rst1 = multiRes;
+            multiRes = '';
+            for(var i=0; i<response[1].rows.length; i++) {
+                if(i < response[1].rows.length-1 ) {
+                    multiRes += Object.values(response[1].rows[i])[0] + '\n';
+                } else if(i == response[1].rows.length-1 ) {
+                    multiRes += Object.values(response[1].rows[i])[0];
+                }
+            }
+            rst2 = multiRes;
+            res.send({result_first_query:rst1, result_second_query:rst2});
             if(err != null) {
                 console.log(err);
             }
-            data = response.rows;
-            res.send(data);
         });
     });
     pool.on('end', function() {client.end();});

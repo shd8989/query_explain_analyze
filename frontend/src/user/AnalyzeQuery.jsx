@@ -22,6 +22,8 @@ const AnalyzeQuery = () => {
       query: ''
     }
   });
+  const [resultFirst, setResultFirst] = useState('');
+  const [resultSecond, setResultSecond] = useState('');
   const [scenario1, setScenario1] = useState('');
   const [scenario2, setScenario2] = useState('');
   const [dbSeq1, setDbSeq1] = useState(0);
@@ -69,6 +71,12 @@ const AnalyzeQuery = () => {
       setOdnNumber(ordinalNumber);
     }
   }, [querySeq1, querySeq2]);
+
+  const sendDataToParent4 = useCallback((data) => {
+    setResultFirst(preResultFirst => data.result_first_query);
+    setResultSecond(preResultSecond => data.result_second_query);
+    setActiveTab('tab2');
+  }, []);
 
   useEffect(() => {
     const query_info = async () => {
@@ -154,9 +162,9 @@ const AnalyzeQuery = () => {
           </div>
         </div>
         {
-          activeTab === "tab1" ? <CompareQuery data={compareQuery} /> : 
-          activeTab === "tab2" ? <QueryPlanText data={compareQuery} /> : 
-          <QueryPlanView data={compareQuery} />
+          activeTab === "tab1" ? <CompareQuery data={compareQuery} sendDataToParent={sendDataToParent4} /> : 
+          activeTab === "tab2" ? <QueryPlanText data={compareQuery} resultFirst={resultFirst} resultSecond={resultSecond} /> : 
+          <QueryPlanView data={compareQuery} resultFirst={resultFirst} resultSecond={resultSecond} />
         }
       </main>
     </>
