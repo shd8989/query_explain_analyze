@@ -163,8 +163,8 @@ const AnalyzeQuery = () => {
         </div>
         {
           activeTab === "tab1" ? <CompareQuery data={compareQuery} sendDataToParent={sendDataToParent4} /> : 
-          activeTab === "tab2" ? <QueryPlanText data={compareQuery} resultFirst={resultFirst} resultSecond={resultSecond} /> : 
-          <QueryPlanView data={compareQuery} resultFirst={resultFirst} resultSecond={resultSecond} />
+          activeTab === "tab2" ? <QueryPlanText resultFirst={resultFirst} resultSecond={resultSecond} /> : 
+          <QueryPlanView resultFirst={resultFirst} resultSecond={resultSecond} />
         }
       </main>
     </>
