@@ -112,12 +112,19 @@ const initialEdges = [
   },
 ];
 
-const QueryPlanView = (resultFirst, resultSecond) => {
+const QueryPlanView = ({resultFirst, resultSecond}) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const onConnect = useCallback((params) => setEdges((els) => addEdge(params, els)), []);
 
-  console.log(resultFirst, resultSecond);
+  const regex = /\ *\-\>/;
+  var ab = resultSecond.split('\n')
+  .filter(line => {
+    if(line.substring(1, 2) === '0' || line.match(regex)) {
+      return line
+    }
+  })
+  console.log(ab);
   return (
     <>
       <main>
