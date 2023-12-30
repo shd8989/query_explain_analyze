@@ -8,14 +8,14 @@ const QueryPlanText = ({resultFirst, resultSecond}) => {
           <div className="row">
             <div className="col">
               <div className="text-nowrap">
-                <p style={{whiteSpace:'pre-line'}}>
+                <p className="queryplan_align">
                   {resultFirst}
                 </p>
               </div>
             </div>
             <div className="col">
               <div className="text-nowrap">
-                <p style={{whiteSpace:'pre-line'}}>
+                <p className="queryplan_align">
                   {resultSecond}
                 </p>
               </div>
