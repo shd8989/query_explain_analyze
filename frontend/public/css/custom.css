@@ -12,3 +12,7 @@
 .mouse_hover {
   cursor: pointer;
 }
+
+.min500 {
+  min-height: 500px;
+}
