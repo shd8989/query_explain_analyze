@@ -260,7 +260,7 @@ app.get(api_context + '/select-db', (req, res) => {
         }
         let selectQuery = '';
         let values = [];
-        if(req.query.test_scenario !== '') {
+        if(req.query.test_scenario !== '' && req.query.test_scenario !== undefined) {
             selectQuery = "SELECT b.db_seq, b.nickname "
             + "FROM tb_result_querytest a "
             + "JOIN tb_database b ON a.db_seq = b.db_seq "
@@ -273,7 +273,7 @@ app.get(api_context + '/select-db', (req, res) => {
             + "FROM tb_database "
             + "ORDER BY nickname asc";
         }
-        pool.query(selectQuery, (req.query.test_scenario !== '' ? [values] : []), (err, response) => {
+        pool.query(selectQuery, (req.query.test_scenario !== '' && req.query.test_scenario !== undefined ? values : []), (err, response) => {
             if(err != null) {
                 console.log(err);
             }
