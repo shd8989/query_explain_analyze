@@ -42,18 +42,16 @@ WHEN dept_no = 18 then 'Burnley'
 WHEN dept_no = 19 then 'Sheffield United'
 END as team_name
 FROM (SELECT team_no, team_no % 20 AS dept_no
-FROM generate_series(1, 1000) AS team_no) a;
+FROM generate_series(1, 200) AS team_no) a;
 
 CREATE TABLE tb_user AS
 SELECT user_no, user_no % 20 as dept_no, now() as created_at
-FROM generate_series(1, 50000) AS user_no;
+FROM generate_series(1, 5000) AS user_no;
 
 CREATE TABLE tb_product AS
 SELECT substring(md5(random()::text), 0, 3) as prod_no, user_no, to_char(gs, 'YYYYMMDD') as log_date
-FROM generate_series(1, 50000) AS user_no,
+FROM generate_series(1, 5000) AS user_no,
 generate_series('2024-01-01 00:00:00'::timestamp, '2024-12-31 23:59:59'::timestamp, '1 days') AS gs;
-
-CREATE INDEX idx_user_department_no ON users (department_no);
 
 CREATE INDEX idx_user_dept_no ON tb_user (dept_no);
 CREATE INDEX idx_user_user_no ON tb_user (user_no);
@@ -63,14 +61,14 @@ SELECT *
 FROM tb_team a
 JOIN tb_user b ON a.dept_no = b.dept_no
 JOIN tb_product c ON b.user_no = c.user_no
-WHERE b.dept_no < 9
+WHERE b.dept_no > 17
 AND a.team_name != 'Bournemouth'
-AND c.log_date < '20240401';
+AND c.log_date > '20241130';
 
 SELECT c.prod_no, string_agg(a.dept_no::text, ',') AS dept_no
 FROM tb_team a
 JOIN tb_user b ON a.dept_no = b.dept_no
 JOIN tb_product c ON b.user_no = c.user_no
-WHERE b.user_no <= 10000
+WHERE b.user_no <= 5000
 AND a.team_name not in ('Arsenal', 'Wolverhampton Wanderers', 'Everton', 'Tottenham Hotspur')
 GROUP BY c.prod_no;
