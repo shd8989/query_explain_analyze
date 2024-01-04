@@ -119,21 +119,23 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
   const onConnect = useCallback((params) => setEdges((els) => addEdge(params, els)), []);
 
   const regex = /\ *\-\>/;
+  const regex1 = /\]/
+  const regex2 = /\-\>/
+  const regex3 = /\(cost/
 
-  var arr1 = [];
-  var arr2 = [];
+  var nodeArr1 = [];
+  var nodeArr2 = [];
   var planDepth = 1;
-  var prePlanDepth = 1;
+  var prePlanDepth = 0;
   var yDepth = 0;
   resultFirst.split('\n').filter(line => {
     if(line.substring(1, 2) === '0' || line.match(regex)) {
       if(line.substring(1, 2) === '0') {
-        var idx = line.indexOf('Hash Join');
-        if(idx > -1) {
-          var nodeId = line.substring(idx, idx+9);
+        if(line.match(regex2) !== undefined && line.match(regex2) !== null) {
+          var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
           var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-          arr1.push({
-            id: nodeId.replace(' ', '_') + '_0',
+          nodeArr1.push({
+            id: '0_0',
             sourcePosition: 'right',
             type: 'input',
             data: { label: nodeId + '\n' + actualData },
@@ -141,60 +143,17 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
           });
         }
       } else if(line.substring(1, 2) > '0') {
-        const regex1 = /\]/
-        const regex2 = /\-\>/
-        const regex3 = /\(cost/
         if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
           var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
           var actualData = line.substring(line.indexOf('actual time'), line.length-1);
           planDepth = Number(line.substring(1, line.match(regex1).index));
           yDepth++;
-          arr1.push({
-            id: nodeId.replace(' ', '_') + '_' + planDepth,
+          nodeArr1.push({
+            id: planDepth + '_' + nodeId,
             sourcePosition: 'right',
             targetPosition: 'left',
             data: { label: nodeId + '\n' + actualData },
-            position: { x: 150*planDepth, y: 80*yDepth }
-          });
-          prePlanDepth = planDepth;
-        }
-      }
-    }
-  });
-
-  var planDepth = 1;
-  var prePlanDepth = 1;
-  var yDepth = 0;
-  resultSecond.split('\n').filter(line => {
-    if(line.substring(1, 2) === '0' || line.match(regex)) {
-      if(line.substring(1, 2) === '0') {
-        var idx = line.indexOf('Hash Join');
-        if(idx > -1) {
-          var nodeId = line.substring(idx, idx+9);
-          var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-          arr2.push({
-            id: nodeId.replace(' ', '_') + '_0',
-            sourcePosition: 'right',
-            type: 'input',
-            data: { label: nodeId + '\n' + actualData },
-            position: { x: 0, y: 0 }
-          });
-        }
-      } else if(line.substring(1, 2) > '0') {
-        const regex1 = /\]/
-        const regex2 = /\-\>/
-        const regex3 = /\(cost/
-        if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
-          var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
-          var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-          planDepth = Number(line.substring(1, line.match(regex1).index));
-          yDepth++;
-          arr2.push({
-            id: nodeId.replace(' ', '_') + '_' + planDepth,
-            sourcePosition: 'right',
-            targetPosition: 'left',
-            data: { label: nodeId + '\n' + actualData },
-            position: { x: 150*planDepth, y: 80*yDepth }
+            position: { x: 160*planDepth, y: 80*yDepth }
           });
           prePlanDepth = planDepth;
         }
@@ -204,8 +163,8 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
 
   useEffect(() => {
     const query_info = async () => {
-      setNodes1(arr1);
-      setNodes2(arr2);
+      setNodes1(nodeArr1);
+      setNodes2(nodeArr2);
     }
     query_info();
   }, []);
@@ -219,18 +178,6 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
                 nodes={nodes1}
                 edges={edges}
                 onNodesChange={onNodesChange1}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                fitView
-                style={{whiteSpace: 'pre-wrap'}}
-                attributionPosition="bottom-left"
-              ></ReactFlow>
-            </div>
-            <div className="col">
-              <ReactFlow
-                nodes={nodes2}
-                edges={edges}
-                onNodesChange={onNodesChange2}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 fitView
