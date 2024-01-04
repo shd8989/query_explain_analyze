@@ -118,48 +118,123 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const onConnect = useCallback((params) => setEdges((els) => addEdge(params, els)), []);
 
-  const regex = /\ *\-\>/;
+  const regex = /\[[0]\]/;
   const regex1 = /\]/
   const regex2 = /\-\>/
   const regex3 = /\(cost/
 
   var nodeArr1 = [];
+  var node1Cnt = 0;
   var nodeArr2 = [];
+  var node2Cnt = 0;
+  var edgeArr = [];
+  var edgeCnt = 1;
   var planDepth = 1;
   var prePlanDepth = 0;
+  var depthMap = new Map;
   var yDepth = 0;
   resultFirst.split('\n').filter(line => {
-    if(line.substring(1, 2) === '0' || line.match(regex)) {
-      if(line.substring(1, 2) === '0') {
-        if(line.match(regex2) !== undefined && line.match(regex2) !== null) {
-          var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
-          var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-          nodeArr1.push({
-            id: '0_0',
-            sourcePosition: 'right',
-            type: 'input',
-            data: { label: nodeId + '\n' + actualData },
-            position: { x: 0, y: 0 }
-          });
+    if(line.substring(1, 2) === '0') {
+      if(line.match(regex) !== undefined && line.match(regex) !== null) {
+        var nodeId = line.substring(line.match(regex).index+3, line.match(regex3).index).trim();
+        var actualData = line.substring(line.indexOf('actual time'), line.length-1);
+        nodeArr1.push({
+          id: '0_0',
+          sourcePosition: 'right',
+          type: 'input',
+          data: { label: nodeId + '\n' + actualData },
+          position: { x: 0, y: 0 }
+        });
+      }
+    } else if(line.substring(1, 2) > '0') {
+      if(line.match(regex2) !== undefined && line.match(regex2) !== null) {
+        var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
+        var actualData = line.substring(line.indexOf('actual time'), line.length-1);
+        planDepth = Number(line.substring(1, line.match(regex1).index));
+        yDepth++;
+        depthMap.set(planDepth, node1Cnt);
+        nodeArr1.push({
+          id: planDepth + '_' + depthMap.get(planDepth),
+          sourcePosition: 'right',
+          targetPosition: 'left',
+          data: { label: nodeId + '\n' + actualData },
+          position: { x: 160*planDepth, y: 80*yDepth }
+        });
+        // edge 연결할때 - 깊이 탐색하듯이 고려
+        // 1. prePlanDepth보다 크면 prePlanDepth node를 start node로 planDepth 노드를 end node로 설정
+        // 2. prePlanDepth와 plandepth가 같다면 match등을 활용하여 이전 노드의 id를 찾아 start node로 설정
+        // 2.1. 아니면 pre2PlanDepth로해서 두번째 이전의 planDepth를 저장하여 start node를 설정
+        // 2.2. 아니면 depth 정보를 map에 저장하여 사용
+        // 3. prePlanDepth보다 작다면 match등을 활용하여 이전 노드 중 가까운 상위 노드의 id를 찾아 start node로 설정
+        // 3.1. 아니면 depth 정보를 map에 저장하여 사용
+        if(planDepth > prePlanDepth) {
+        //   // var startNode = nodeArr1.filter((node) => console.log(node))
+        //   // var endNode = nodeArr1.filter((node) => console.log(node))
+
+        //   // edgeArr.push({
+        //   //   id: 'edge_' + edgeCnt,
+        //   //   source: startNode,
+        //   //   target: endNode,
+        //   //   type: 'smoothstep',
+        //   //   animated: true
+        //   // })
+          node1Cnt = 0;
+        } else if(planDepth === prePlanDepth) {
+          if(depthMap.has(planDepth)) {
+            depthMap.set(planDepth, depthMap.get(planDepth)+1);
+            console.log('=== has', depthMap);
+          }
+          node1Cnt++;
+        } else {
+          if(depthMap.has(planDepth)) {
+            depthMap.set(planDepth, depthMap.get(planDepth)+1);
+            console.log('< has', depthMap);
+          }
+          node1Cnt++;
         }
-      } else if(line.substring(1, 2) > '0') {
-        if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
-          var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
-          var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-          planDepth = Number(line.substring(1, line.match(regex1).index));
-          yDepth++;
-          nodeArr1.push({
-            id: planDepth + '_' + nodeId,
-            sourcePosition: 'right',
-            targetPosition: 'left',
-            data: { label: nodeId + '\n' + actualData },
-            position: { x: 160*planDepth, y: 80*yDepth }
-          });
-          prePlanDepth = planDepth;
-        }
+        console.log(planDepth, prePlanDepth, depthMap.get(planDepth));
+        prePlanDepth = planDepth;
+        // edgeCnt++;
       }
     }
   });
+  console.log(nodes1);
+
+  // planDepth = 1;
+  // prePlanDepth = 0;
+  // yDepth = 0;
+  // resultSecond.split('\n').filter(line => {
+  //   if(line.substring(1, 2) === '0' || line.match(regex)) {
+  //     if(line.substring(1, 2) === '0') {
+  //       if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
+  //         var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
+  //         var actualData = line.substring(line.indexOf('actual time'), line.length-1);
+  //         nodeArr2.push({
+  //           id: nodeId.replace(' ', '_') + '_0',
+  //           sourcePosition: 'right',
+  //           type: 'input',
+  //           data: { label: nodeId + '\n' + actualData },
+  //           position: { x: 0, y: 0 }
+  //         });
+  //       }
+  //     } else if(line.substring(1, 2) > '0') {
+  //       if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
+  //         var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
+  //         var actualData = line.substring(line.indexOf('actual time'), line.length-1);
+  //         planDepth = Number(line.substring(1, line.match(regex1).index));
+  //         yDepth++;
+  //         nodeArr2.push({
+  //           id: nodeId.replace(' ', '_') + '_' + planDepth,
+  //           sourcePosition: 'right',
+  //           targetPosition: 'left',
+  //           data: { label: nodeId + '\n' + actualData },
+  //           position: { x: 160*planDepth, y: 80*yDepth }
+  //         });
+  //         prePlanDepth = planDepth;
+  //       }
+  //     }
+  //   }
+  // });
 
   useEffect(() => {
     const query_info = async () => {
