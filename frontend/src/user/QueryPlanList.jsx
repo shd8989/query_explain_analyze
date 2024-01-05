@@ -38,7 +38,7 @@ const QueryPlanList = () => {
   const selectQuery = async (test_scenario, db_seq) => {
     setDbSeq(dbSeq => dbSeq);
     setTestScenario(testScenario => testScenario);
-    const response = await axios.get('/api/v1/query-list', {params: {test_scenario: test_scenario, db_seq: db_seq}})
+    const response = await axios.get('/api/v1/query-plan-list', {params: {test_scenario: test_scenario, db_seq: db_seq}})
     const newQueryData = await response.data.map((rowData) => ({
         query_seq: rowData.query_seq,
         error_msg: rowData.error_msg,

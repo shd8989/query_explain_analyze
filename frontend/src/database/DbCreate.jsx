@@ -23,7 +23,7 @@ const DbCreate = () => {
     setResultDbYn(resultDbYn => resultDbYn);
 
     if(dbHost !== '' && dbPort !== '' && dbName !== '' && dbUser !=='' && dbUserPw !== '') {
-      await axios.post('/api/v1/createdb', {
+      await axios.post('/api/v1/create-dbconn', {
         nickname: nickname,
         dbHost: dbHost,
         dbPort: dbPort,
@@ -122,13 +122,13 @@ const DbCreate = () => {
                       <div className="form-check col-md-6">
                         <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="T" onChange={handleChange} defaultChecked />
                         <label className="form-check-label" htmlFor="flexRadioDefault1">
-                          Database for testing
+                          테스트 대상 데이터베이스
                         </label>
                       </div>
                       <div className="form-check col-md-6">
                         <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="S" onChange={handleChange} />
                         <label className="form-check-label" htmlFor="flexRadioDefault2">
-                          Database for saving a result of test
+                          테스트 결과를 저장 할 데이터베이스
                         </label>
                       </div>
                     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Route, Routes } from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import Header from './common/Header';
 import LeftSideNav from './common/LeftSideNav';
 import Footer from './common/Footer';
@@ -25,11 +25,11 @@ class App extends React.Component {
           <LeftSideNav />
           <div id="layoutSidenav_content">
             <Routes>
-              <Route path="/db-create" element={<DbCreate />} />
-              <Route path="/db-list" element={<DbList />} />
-              <Route path="/" exact element={<QueryExecute />} />
-              <Route path="/list" element={<QueryPlanList />} />
-              <Route path="/analyze" element={<AnalyzeQuery />} />
+              <Route path="/dbconn_create" element={<DbCreate />} />
+              <Route path="/dbconn_list" element={<DbList />} />
+              <Route path="/query_execute" exact element={<QueryExecute />} />
+              <Route path="/query_plan_list" element={<QueryPlanList />} />
+              <Route path="/analyze_query" element={<AnalyzeQuery />} />
             </Routes>
             <Footer />
           </div>

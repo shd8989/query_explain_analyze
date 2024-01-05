@@ -14,7 +14,7 @@ const QueryExecute = () => {
     setDbSeq(dbSeq => dbSeq);
     setScenario(scenario => scenario);
     if(text !== '' && dbSeq !== '' && scenario !== '') {
-      await axios.post('/api/v1/single-query', {
+      await axios.post('/api/v1/exec-single-query', {
         query: text,
         dbSeq: dbSeq,
         scenario: scenario
@@ -31,7 +31,7 @@ const QueryExecute = () => {
     setMultiQueries(multiQueries => multiQueries);
     setScenario(scenario => scenario);
     if(multiQueries && dbSeq !== '' && scenario !== '') {
-      await axios.post('/api/v1/multi-query', {
+      await axios.post('/api/v1/exec-multi-query', {
         data: multiQueries,
         dbSeq: dbSeq,
         scenario: scenario

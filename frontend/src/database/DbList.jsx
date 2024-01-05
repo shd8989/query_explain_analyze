@@ -44,7 +44,7 @@ const DbList = () => {
 
   useEffect(() => {
     const selectQuery = async () => {
-      const response = await axios.get('/api/v1/db-list', {})
+      const response = await axios.get('/api/v1/dbconn-list', {});
       const newQueryData = await response.data.map((rowData) => ({
           db_seq: rowData.db_seq,
           nickname: rowData.nickname,
@@ -66,16 +66,6 @@ const DbList = () => {
     <>
       <main>
         <div className="container-fluid px-4">
-          <div className="row">
-            <div className="col">
-              <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example" defaultValue="0">
-                <option value="0">Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-            </div>
-          </div>
           <div className="row">
             <table className="table">
               <thead>

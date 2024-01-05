@@ -8,26 +8,26 @@ const LeftSideNav = () => {
             <div className="sb-sidenav-menu">
               <div className="nav">
                 <div className="sb-sidenav-menu-heading">DATABASE</div>
-                <a className="nav-link" href="db-create">
+                <a className="nav-link" href="dbconn_create">
                   <div className="sb-nav-link-icon"><i className="fas fa-tachometer-alt" /></div>
                   DB Connection Create
                 </a>
-                <a className="nav-link" href="db-list">
+                <a className="nav-link" href="dbconn_list">
                   <div className="sb-nav-link-icon"><i className="fas fa-columns" /></div>
                   DB Connection List
                 </a>
               </div>
               <div className="nav">
                 <div className="sb-sidenav-menu-heading">MENU</div>
-                <a className="nav-link" href="/">
+                <a className="nav-link" href="query_execute">
                   <div className="sb-nav-link-icon"><i className="fas fa-tachometer-alt" /></div>
                   Query Execute
                 </a>
-                <a className="nav-link" href="list">
+                <a className="nav-link" href="query_plan_list">
                   <div className="sb-nav-link-icon"><i className="fas fa-columns" /></div>
                   Query Plan List
                 </a>
-                <a className="nav-link" href="analyze">
+                <a className="nav-link" href="analyze_query">
                   <div className="sb-nav-link-icon"><i className="fas fa-book-open" /></div>
                   Analyze Query
                 </a>
