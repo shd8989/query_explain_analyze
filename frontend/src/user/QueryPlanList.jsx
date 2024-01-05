@@ -10,7 +10,7 @@ function QueryRow({data}) {
         <tr key={item.query_seq}>
           <th scope="row">{item.query_seq}</th>
           <td>{item.extime}</td>
-          <td>{item.is_result}</td>
+          <td>{item.is_success}</td>
           <td></td>
           <td></td>
           <td></td>
@@ -32,7 +32,7 @@ const QueryPlanList = () => {
     insert_dt: '',
     query: '',
     return_data: '',
-    is_result: ''
+    is_success: ''
   }]);
 
   const selectQuery = async (test_scenario, db_seq) => {
@@ -46,7 +46,7 @@ const QueryPlanList = () => {
         insert_dt: rowData.insert_dt,
         query: rowData.query,
         return_data: rowData.return_data,
-        is_result: rowData.is_result
+        is_success: rowData.is_success
       })
     )
     // setQueryData(queryData.concat(newQueryData))
@@ -64,7 +64,7 @@ const QueryPlanList = () => {
     //       insert_dt: rowData.insert_dt,
     //       query: rowData.query,
     //       return_data: rowData.return_data,
-    //       is_result: rowData.is_result
+    //       is_success: rowData.is_success
     //     })
     //   )
     //   // setQueryData(queryData.concat(newQueryData))

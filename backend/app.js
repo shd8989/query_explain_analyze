@@ -125,7 +125,7 @@ app.post(api_context + '/exec-single-query', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_result, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
+        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
         client.query(query)
         .then((response) => {
             client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
@@ -147,7 +147,7 @@ app.post(api_context + '/exec-multi-query', (req, res) => {
             console.log('connection error', err);
         }
         for(var i=0; i<data.length; i++) {
-            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_result, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
             let query = data[i];
             client.query(query)
             .then((response) => {
