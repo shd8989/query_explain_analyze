@@ -22,6 +22,40 @@ const DbCreate = () => {
     setDbUserPwConfirm(dbUserPwConfirm => dbUserPwConfirm);
     setResultDbYn(resultDbYn => resultDbYn);
 
+    if(nickname !== '') {
+      alert('Nickname을 입력해주세요.');
+      return false;
+    }
+    if(dbHost !== '') {
+      alert('Host를 입력해주세요.');
+      return false;
+    }
+    if(dbPort !== '') {
+      alert('Port를 입력해주세요.');
+      return false;
+    }
+    if(dbName !== '') {
+      alert('DB명을 입력해주세요.');
+      return false;
+    }
+    if(dbUser !== '') {
+      alert('DB유저를 입력해주세요.');
+      return false;
+    }
+    if(dbUserPw !== '') {
+      alert('비밀번호를 입력해주세요.');
+      return false;
+    }
+    if(dbUserPwConfirm !== '') {
+      alert('비밀번호 확인을 입력해주세요.');
+      return false;
+    }
+
+    if(dbUserPw !== dbUserPwConfirm) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return false;
+    }
+
     if(dbHost !== '' && dbPort !== '' && dbName !== '' && dbUser !=='' && dbUserPw !== '') {
       await axios.post('/api/v1/create-dbconn', {
         nickname: nickname,
@@ -32,7 +66,11 @@ const DbCreate = () => {
         dbUserPw: dbUserPw,
         resultDbYn: resultDbYn
       })
-      .then(response => {console.log(response);});
+      .then(response => {
+        if(response.status === 200) {
+          alert('데이터베이스가 등록되었습니다.');
+        }
+      });
     }
   };
 
@@ -49,6 +87,8 @@ const DbCreate = () => {
       setDbUser(e.target.value)
     } else if(e.target.id === 'inputPasswd') {
       setDbUserPw(e.target.value)
+    } else if(e.target.id === 'inputPasswdConfirm') {
+      setDbUserPwConfirm(e.target.value)
     } else if(e.target.id === 'flexRadioDefault1' || e.target.id === 'flexRadioDefault2') {
       setResultDbYn(e.target.value)
     }
@@ -111,7 +151,7 @@ const DbCreate = () => {
                       </div>
                       <div className="col-md-6">
                         <div className="form-floating mb-3 mb-md-0">
-                          <input className="form-control" id="inputPasswdConfirm" type="password" placeholder="Confirm password" onChange={handleChange} value={dbUserPw !== dbUserPwConfirm ? "비밀번호가 일치하지 않음" : dbUserPwConfirm} />
+                          <input className="form-control" id="inputPasswdConfirm" type="password" placeholder="Confirm password" onChange={handleChange} value={dbUserPwConfirm} />
                           <label htmlFor="inputPasswdConfirm">
                             Confirm Password
                           </label>
@@ -133,8 +173,8 @@ const DbCreate = () => {
                       </div>
                     </div>
                     <div className="mt-4 mb-0">
-                      <div className="card bg-primary text-white mb-4">
-                        <div className="card-body" onClick={createDb}>Create Database</div>
+                      <div className="card bg-primary text-white mb-4 mouse_hover">
+                        <div className="card-body" onClick={createDb} >Create Database</div>
                       </div>
                     </div>
                   </form>

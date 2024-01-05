@@ -33,7 +33,7 @@ const pool = new Pool({
 });
 
 // database
-app.post(api_context + '/create-dbconn', (req) => {
+app.post(api_context + '/create-dbconn', (req, res) => {
     const {nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn} = req.body;
     if(resultDbYn === 'T') {
         pool.connect(function(err, client) {
@@ -42,7 +42,8 @@ app.post(api_context + '/create-dbconn', (req) => {
             }
             const insertQuery = "INSERT INTO tb_database (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
             client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
-            .then((res) => {
+            .then((response) => {
+                res.send(200);
                 console.log('success insert database information');
             })
             .catch((e) => {
@@ -66,7 +67,8 @@ app.post(api_context + '/create-dbconn', (req) => {
                 }
                 const insertQuery = "INSERT INTO tb_database (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
                 client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
-                .then((res) => {
+                .then((response) => {
+                    res.send(200);
                     console.log('success insert database information');
                 })
                 .catch((e) => {
