@@ -244,6 +244,7 @@ app.get(api_context + '/select-query', (req, res) => {
             const selectQuery = "SELECT query_seq, query "
                 + "FROM tb_result_querytest "
                 + "WHERE db_seq = $1 "
+                + "AND is_success = 'Success' "
                 + "ORDER BY query_seq desc";
             pool.query(selectQuery, [req.query.db_seq], (err, response) => {
                 if(err != null) {
