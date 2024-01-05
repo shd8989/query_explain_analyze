@@ -45,7 +45,7 @@ const DbList = () => {
   useEffect(() => {
     const selectQuery = async () => {
       const response = await axios.get('/api/v1/dbconn-list', {});
-      const newQueryData = await response.data.map((rowData) => ({
+      const newQueryData = await response.data.sort((a, b) => b.db_seq - a.db_seq).map((rowData) => ({
           db_seq: rowData.db_seq,
           nickname: rowData.nickname,
           db_host: rowData.db_host,
