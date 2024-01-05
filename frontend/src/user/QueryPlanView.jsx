@@ -1,132 +1,22 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge } from 'react-flow-renderer';
 
-const initialNodes = [
-  {
-    id: 'horizontal-1',
-    sourcePosition: 'right',
-    type: 'input',
-    data: { label: 'Input', title: 'readFile', subline: 'api.ts' },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: 'horizontal-2',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'A Node' },
-    position: { x: 200, y: 0 },
-  },
-  {
-    id: 'horizontal-3',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'Node 3' },
-    position: { x: 200, y: 80 },
-  },
-  {
-    id: 'horizontal-4',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'Node 4' },
-    position: { x: 400, y: 0 },
-  },
-  {
-    id: 'horizontal-5',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'Node 5' },
-    position: { x: 400, y: 80 },
-  },
-  {
-    id: 'horizontal-6',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'Node 6' },
-    position: { x: 400, y: 160 },
-  },
-  {
-    id: 'horizontal-7',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'Node 7' },
-    position: { x: 600, y: 80 },
-  },
-  {
-    id: 'horizontal-8',
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { label: 'Node 8' },
-    position: { x: 600, y: 160 },
-  },
-];
-
-const initialEdges = [
-  {
-    id: 'horizontal-e1-2',
-    source: 'horizontal-1',
-    type: 'smoothstep',
-    target: 'horizontal-2',
-    animated: true,
-  },
-  {
-    id: 'horizontal-e1-3',
-    source: 'horizontal-1',
-    type: 'smoothstep',
-    target: 'horizontal-3',
-    animated: true,
-  },
-  {
-    id: 'horizontal-e1-4',
-    source: 'horizontal-2',
-    type: 'smoothstep',
-    target: 'horizontal-4',
-    label: 'edge label',
-  },
-  {
-    id: 'horizontal-e3-5',
-    source: 'horizontal-3',
-    type: 'smoothstep',
-    target: 'horizontal-5',
-    animated: true,
-  },
-  {
-    id: 'horizontal-e3-6',
-    source: 'horizontal-3',
-    type: 'smoothstep',
-    target: 'horizontal-6',
-    animated: true,
-  },
-  {
-    id: 'horizontal-e5-7',
-    source: 'horizontal-5',
-    type: 'smoothstep',
-    target: 'horizontal-7',
-    animated: true,
-  },
-  {
-    id: 'horizontal-e6-8',
-    source: 'horizontal-6',
-    type: 'smoothstep',
-    target: 'horizontal-8',
-    animated: true,
-  },
-];
-
 const QueryPlanView = ({resultFirst, resultSecond}) => {
-  const [nodes1, setNodes1, onNodesChange1] = useNodesState(initialNodes);
-  const [nodes2, setNodes2, onNodesChange2] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const onConnect = useCallback((params) => setEdges((els) => addEdge(params, els)), []);
+  const [nodes1, setNodes1] = useNodesState([]);
+  const [nodes2, setNodes2] = useNodesState([]);
+  const [edges1, setEdges1] = useEdgesState([]);
+  const [edges2, setEdges2] = useEdgesState([]);
+  // const onConnect = useCallback((params) => setEdges1((els) => addEdge(params, els)), []);
 
   const regex = /\[[0]\]/;
   const regex1 = /\]/
   const regex2 = /\-\>/
   const regex3 = /\(cost/
 
-  var nodeArr1 = [];
-  var nodeArr2 = [];
-  var edgeArr = [];
-  var edgeCnt = 1;
+  var node1Arr = [];
+  var node2Arr = [];
+  var edge1Arr = [];
+  var edge2Arr = [];
   var planDepth = 1;
   var prePlanDepth = 0;
   var preNodeId = '0_0';
@@ -137,7 +27,7 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
       if(line.match(regex) !== undefined && line.match(regex) !== null) {
         var nodeLabel = line.substring(line.match(regex).index+3, line.match(regex3).index).trim();
         var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-        nodeArr1.push({
+        node1Arr.push({
           id: '0_0',
           sourcePosition: 'right',
           type: 'input',
@@ -161,90 +51,136 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
         
         if(planDepth > prePlanDepth) {
           preNodeId = prePlanDepth + '_' + depthMap.get(prePlanDepth);
-          //   // var startNode = nodeArr1.filter((node) => console.log(node))
-          //   // var endNode = nodeArr1.filter((node) => console.log(node))
-  
-          //   // edgeArr.push({
-          //   //   id: 'edge_' + edgeCnt,
-          //   //   source: startNode,
-          //   //   target: endNode,
-          //   //   type: 'smoothstep',
-          //   //   animated: true
-          //   // })
-          } else if(planDepth === prePlanDepth) {
-            preNodeId = (prePlanDepth-1) + '_' + (depthMap.get(prePlanDepth-1));
-          } else {
-            preNodeId = depthMap.get(planDepth-1) + '_' + depthMap.get(prePlanDepth);
-          }
+        } else if(planDepth === prePlanDepth) {
+          preNodeId = (prePlanDepth-1) + '_' + (depthMap.get(prePlanDepth-1));
+        } else {
+          preNodeId = depthMap.get(planDepth-1) + '_' + depthMap.get(prePlanDepth);
+        }
 
-        nodeArr1.push({
+        node1Arr.push({
           id: planDepth + '_' + depthMap.get(planDepth) + '-' + preNodeId,
           sourcePosition: 'right',
           targetPosition: 'left',
           data: { label: nodeLabel + '\n' + actualData },
-          position: { x: 160*planDepth, y: 80*yDepth }
+          position: { x: 180*planDepth, y: 80*yDepth*(planDepth === prePlanDepth ? 1.1 : 1) }
         });
-
-        // edge 연결할때 - 깊이 탐색하듯이 고려
-        // 1. prePlanDepth보다 크면 prePlanDepth node를 start node로 planDepth 노드를 end node로 설정
-        // 2. prePlanDepth와 plandepth가 같다면 match등을 활용하여 이전 노드의 id를 찾아 start node로 설정
-        // 2.1. 아니면 pre2PlanDepth로해서 두번째 이전의 planDepth를 저장하여 start node를 설정
-        // 2.2. 아니면 depth 정보를 map에 저장하여 사용
-        // 3. prePlanDepth보다 작다면 match등을 활용하여 이전 노드 중 가까운 상위 노드의 id를 찾아 start node로 설정
-        // 3.1. 아니면 depth 정보를 map에 저장하여 사용
-
-        // console.log(preNodeId, depthMap.get(planDepth))
         prePlanDepth = planDepth
-        // edgeCnt++;
       }
     }
   });
-  console.log(nodes1);
-  console.log('-----------------------------------');
 
-  // planDepth = 1;
-  // prePlanDepth = 0;
-  // yDepth = 0;
-  // resultSecond.split('\n').filter(line => {
-  //   if(line.substring(1, 2) === '0' || line.match(regex)) {
-  //     if(line.substring(1, 2) === '0') {
-  //       if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
-  //         var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
-  //         var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-  //         nodeArr2.push({
-  //           id: nodeId.replace(' ', '_') + '_0',
-  //           sourcePosition: 'right',
-  //           type: 'input',
-  //           data: { label: nodeId + '\n' + actualData },
-  //           position: { x: 0, y: 0 }
-  //         });
-  //       }
-  //     } else if(line.substring(1, 2) > '0') {
-  //       if(line.match(regex2).index !== undefined && line.match(regex2).index > 0) {
-  //         var nodeId = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
-  //         var actualData = line.substring(line.indexOf('actual time'), line.length-1);
-  //         planDepth = Number(line.substring(1, line.match(regex1).index));
-  //         yDepth++;
-  //         nodeArr2.push({
-  //           id: nodeId.replace(' ', '_') + '_' + planDepth,
-  //           sourcePosition: 'right',
-  //           targetPosition: 'left',
-  //           data: { label: nodeId + '\n' + actualData },
-  //           position: { x: 160*planDepth, y: 80*yDepth }
-  //         });
-  //         prePlanDepth = planDepth;
-  //       }
-  //     }
-  //   }
-  // });
+  planDepth = 1;
+  prePlanDepth = 0;
+  preNodeId = '0_0';
+  depthMap = new Map;
+  yDepth = 0;
+  resultSecond.split('\n').filter(line => {
+    if(line.substring(1, 2) === '0') {
+      if(line.match(regex) !== undefined && line.match(regex) !== null) {
+        var nodeLabel = line.substring(line.match(regex).index+3, line.match(regex3).index).trim();
+        var actualData = line.substring(line.indexOf('actual time'), line.length-1);
+        node2Arr.push({
+          id: '0_0',
+          sourcePosition: 'right',
+          type: 'input',
+          data: { label: nodeLabel + '\n' + actualData },
+          position: { x: 0, y: 0 }
+        });
+        depthMap.set(0, 0);
+      }
+    } else if(line.substring(1, 2) > '0') {
+      if(line.match(regex2) !== undefined && line.match(regex2) !== null) {
+        var nodeLabel = line.substring(line.match(regex2).index+2, line.match(regex3).index).trim();
+        var actualData = line.substring(line.indexOf('actual time'), line.length-1);
+        planDepth = Number(line.substring(1, line.match(regex1).index));
+        yDepth++;
+        
+        if(depthMap.has(planDepth)) {
+          depthMap.set(planDepth, depthMap.get(planDepth)+1);
+        } else {
+          depthMap.set(planDepth, depthMap.get(planDepth) !== undefined ? depthMap.get(planDepth) : 0);
+        }
+        
+        if(planDepth > prePlanDepth) {
+          preNodeId = prePlanDepth + '_' + depthMap.get(prePlanDepth);
+        } else if(planDepth === prePlanDepth) {
+          preNodeId = (prePlanDepth-1) + '_' + (depthMap.get(prePlanDepth-1));
+        } else {
+          preNodeId = depthMap.get(planDepth-1) + '_' + depthMap.get(prePlanDepth);
+        }
+
+        node2Arr.push({
+          id: planDepth + '_' + depthMap.get(planDepth) + '-' + preNodeId,
+          sourcePosition: 'right',
+          targetPosition: 'left',
+          data: { label: nodeLabel + '\n' + actualData },
+          position: { x: 180*planDepth, y: 80*yDepth*(planDepth === prePlanDepth ? 1.1 : 1) }
+        });
+        prePlanDepth = planDepth
+      }
+    }
+  });
+
+  for(var i=1; i<node1Arr.length; i++) {
+    var stNode = node1Arr.filter(node => node.id.indexOf(node1Arr[i].id.split("-")[1])===0);
+    edge1Arr.push({
+      id: 'edge_' + stNode[0].id + '_' + node1Arr[i].id,
+      source: stNode[0].id,
+      target: node1Arr[i].id,
+      type: 'smoothstep',
+      animated: true
+    });
+  }
+
+  for(var i=1; i<node2Arr.length; i++) {
+    var stNode = node2Arr.filter(node => node.id.indexOf(node2Arr[i].id.split("-")[1])===0);
+    edge2Arr.push({
+      id: 'edge_' + stNode[0].id + '_' + node2Arr[i].id,
+      source: stNode[0].id,
+      target: node2Arr[i].id,
+      type: 'smoothstep',
+      animated: true
+    });
+  }
+
+  const onNodesChange1 = async() => {
+    setNodes1(node1Arr);
+  }
+
+  const onNodesChange2 = async() => {
+    setNodes2(node2Arr);
+  }
+
+  const onEdgesChange1 = async() => {
+    for(var i=0; i<edge1Arr.length; i++) {
+      var edge = edge1Arr[i];
+      setEdges1((edge) => addEdge(edge, edge1Arr));
+    }
+  }
+
+  const onEdgesChange2 = async() => {
+    for(var i=0; i<edge2Arr.length; i++) {
+      var edge = edge2Arr[i];
+      setEdges2((edge) => addEdge(edge, edge2Arr));
+    }
+  }
 
   useEffect(() => {
-    const query_info = async () => {
-      setNodes1(nodeArr1);
-      setNodes2(nodeArr2);
-    }
-    query_info();
+    onNodesChange1();
   }, []);
+
+  useEffect(() => {
+    onNodesChange2();
+  }, []);
+
+  useEffect(() => {
+    onEdgesChange1();
+  }, []);
+
+  useEffect(() => {
+    onEdgesChange2();
+  }, []);
+
   return (
     <>
       <main>
@@ -253,10 +189,20 @@ const QueryPlanView = ({resultFirst, resultSecond}) => {
             <div className="col">
               <ReactFlow
                 nodes={nodes1}
-                edges={edges}
+                edges={edges1}
                 onNodesChange={onNodesChange1}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
+                onEdgesChange={onEdgesChange1}
+                fitView
+                style={{whiteSpace: 'pre-wrap'}}
+                attributionPosition="bottom-left"
+              ></ReactFlow>
+            </div>
+            <div className="col">
+              <ReactFlow
+                nodes={nodes2}
+                edges={edges2}
+                onNodesChange={onNodesChange2}
+                onEdgesChange={onEdgesChange2}
                 fitView
                 style={{whiteSpace: 'pre-wrap'}}
                 attributionPosition="bottom-left"
