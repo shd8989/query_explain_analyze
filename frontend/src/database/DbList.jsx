@@ -8,9 +8,10 @@ function QueryRow({data}) {
       {data.map(item => (
         <tr key={item.db_seq}>
           <td>{item.db_seq}</td>
+          <td>{item.nickname}</td>
           <td>{item.db_host}</td>
           <td>{item.db_port}</td>
-          <td>{item.nickname}</td>
+          <td>{item.db_name}</td>
           <td>{item.db_user}</td>
           <td>{item.resultdb_yn === 'T' ? 'Test' : 'Basic'}</td>
           <td>{item.insert_dt.replace('T', ' ').split(".")[0]}</td>
@@ -23,9 +24,10 @@ function QueryRow({data}) {
 const DbList = () => {
   const [queryData, setQueryData] = useState([{
     db_seq: '',
+    nickname: '',
     db_host: '',
     db_port: '',
-    nickname: '',
+    db_name: '',
     db_user: '',
     db_user_pw: '',
     resultdb_yn: '',
@@ -45,9 +47,10 @@ const DbList = () => {
       const response = await axios.get('/api/v1/db-list', {})
       const newQueryData = await response.data.map((rowData) => ({
           db_seq: rowData.db_seq,
+          nickname: rowData.nickname,
           db_host: rowData.db_host,
           db_port: rowData.db_port,
-          nickname: rowData.nickname,
+          db_name: rowData.db_name,
           db_user: rowData.db_user,
           db_user_pw: rowData.db_user_pw,
           resultdb_yn: rowData.resultdb_yn,
@@ -78,6 +81,7 @@ const DbList = () => {
               <thead>
                 <tr>
                   <th scope="col">No</th>
+                  <th scope="col">DB Nickname</th>
                   <th scope="col">Host</th>
                   <th scope="col">Port</th>
                   <th scope="col">DB Name</th>
