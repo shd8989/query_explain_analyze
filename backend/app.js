@@ -260,7 +260,7 @@ app.get(api_context + '/select-db', (req, res) => {
         }
         let selectQuery = '';
         let values = [];
-        if(req.query.test_scenario !== '') {
+        if(req.query.test_scenario !== '' && req.query.test_scenario !== undefined) {
             selectQuery = "SELECT b.db_seq, b.nickname "
             + "FROM tb_result_querytest a "
             + "JOIN tb_database b ON a.db_seq = b.db_seq "
@@ -273,7 +273,7 @@ app.get(api_context + '/select-db', (req, res) => {
             + "FROM tb_database "
             + "ORDER BY nickname asc";
         }
-        pool.query(selectQuery, (req.query.test_scenario !== '' ? [values] : []), (err, response) => {
+        pool.query(selectQuery, (req.query.test_scenario !== '' && req.query.test_scenario !== undefined ? values : []), (err, response) => {
             if(err != null) {
                 console.log(err);
             }
@@ -357,23 +357,58 @@ app.get(api_context + '/query-plan', (req, res) => {
         pool.query(explainAnalyze + req.query.first_query + '; '
                  + explainAnalyze + req.query.second_query, (err, response) => {
             var multiRes = '';
+            const regex = /[A-Z]|\-/;
+            var depthMap = new Map;
+            var planDepth = 1;
             for(var i=0; i<response[0].rows.length; i++) {
-                if(i < response[0].rows.length-1 ) {
-                    multiRes += Object.values(response[0].rows[i])[0] + '\n';
-                } else if(i == response[0].rows.length-1 ) {
-                    multiRes += Object.values(response[0].rows[i])[0];
+                var line = Object.values(response[0].rows[i])[0];
+                var matchLine = line.indexOf(line.match(regex));
+                if(i == 0) {
+                    multiRes = '[0]' + line + '\n';
+                } else if(i < response[0].rows.length-1) {
+                    if(i < response[0].rows.length-2) {
+                        if(!depthMap.has(matchLine)) {
+                            depthMap.set(matchLine, planDepth);
+                            multiRes += '[' + planDepth + ']' + line + '\n';
+                            planDepth++;
+                        } else {
+                            multiRes += '[' + depthMap.get(matchLine) + ']' + line + '\n';
+                        }
+                    } else {
+                        multiRes += line + '\n';
+                    }
+                } else if(i == response[0].rows.length-1) {
+                    multiRes += line;
                 }
             }
             rst1 = multiRes;
+            
             multiRes = '';
+            depthMap = new Map;
+            planDepth = 1;
             for(var i=0; i<response[1].rows.length; i++) {
-                if(i < response[1].rows.length-1 ) {
-                    multiRes += Object.values(response[1].rows[i])[0] + '\n';
-                } else if(i == response[1].rows.length-1 ) {
-                    multiRes += Object.values(response[1].rows[i])[0];
+                var line = Object.values(response[1].rows[i])[0];
+                var matchLine = line.indexOf(line.match(regex));
+                if(i == 0) {
+                    multiRes = '[0]' + line + '\n';
+                } else if(i < response[1].rows.length-1) {
+                    if(i < response[1].rows.length-2) {
+                        if(!depthMap.has(matchLine)) {
+                            depthMap.set(matchLine, planDepth);
+                            multiRes += '[' + planDepth + ']' + line + '\n';
+                            planDepth++;
+                        } else {
+                            multiRes += '[' + depthMap.get(matchLine) + ']' + line + '\n';
+                        }
+                    } else {
+                        multiRes += line + '\n';
+                    }
+                } else if(i == response[1].rows.length-1) {
+                    multiRes += line;
                 }
             }
             rst2 = multiRes;
+            
             res.send({result_first_query:rst1, result_second_query:rst2});
             if(err != null) {
                 console.log(err);

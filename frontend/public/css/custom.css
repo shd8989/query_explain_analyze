@@ -16,3 +16,8 @@
 .min500 {
   min-height: 500px;
 }
+
+.queryplan_align {
+  white-space: pre-wrap;
+  text-align: left;
+}
