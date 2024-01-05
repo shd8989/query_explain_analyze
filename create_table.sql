@@ -1,6 +1,6 @@
 -- init
 -- create a result table
-CREATE TABLE IF NOT EXISTS tb_result_querytest(query_seq bigserial, db_seq integer, test_scenario varchar(100), query varchar(500), return_data text, rst varchar(7), error_msg varchar(500), execute_time varchar(20), insert_dt timestamp);
+CREATE TABLE IF NOT EXISTS tb_result_querytest(query_seq bigserial, db_seq integer, test_scenario varchar(100), query varchar(500), return_data text, is_result varchar(7), error_msg varchar(500), execute_time varchar(20), insert_dt timestamp);
 -- rename a sequence of the table
 ALTER SEQUENCE tb_result_querytest_query_seq_seq RENAME TO tb_result_querytest_seq;
 
@@ -13,7 +13,7 @@ INSERT INTO tb_database(nickname, db_name, db_host, db_port, db_user, db_user_pw
 
 -- test explain analyze query
 EXPLAIN ANALYZE
-SELECT a.nickname, substring(b.query, 0, 20) AS query, b.rst, b.return_data, b.error_msg
+SELECT a.nickname, substring(b.query, 0, 20) AS query, b.is_result, b.return_data, b.error_msg
 FROM tb_database a
 JOIN tb_result_querytest b ON a.db_seq = b.db_seq;
 

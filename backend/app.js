@@ -125,7 +125,7 @@ app.post(api_context + '/exec-single-query', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
+        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_result, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
         client.query(query)
         .then((response) => {
             client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
@@ -147,7 +147,7 @@ app.post(api_context + '/exec-multi-query', (req, res) => {
             console.log('connection error', err);
         }
         for(var i=0; i<data.length; i++) {
-            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, rst, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_result, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
             let query = data[i];
             client.query(query)
             .then((response) => {
@@ -316,8 +316,8 @@ app.get(api_context + '/query-plan', (req, res) => {
             console.log('connection error', err);
         }
         const explainAnalyze = "EXPLAIN ANALYZE ";
-        var rst1 = '';
-        var rst2 = '';
+        var result1 = '';
+        var result2 = '';
         pool.query(explainAnalyze + req.query.first_query + '; '
                  + explainAnalyze + req.query.second_query, (err, response) => {
             var multiRes = '';
@@ -345,7 +345,7 @@ app.get(api_context + '/query-plan', (req, res) => {
                     multiRes += line;
                 }
             }
-            rst1 = multiRes;
+            result1 = multiRes;
             
             multiRes = '';
             depthMap = new Map;
@@ -371,9 +371,9 @@ app.get(api_context + '/query-plan', (req, res) => {
                     multiRes += line;
                 }
             }
-            rst2 = multiRes;
+            result2 = multiRes;
             
-            res.send({result_first_query:rst1, result_second_query:rst2});
+            res.send({result_first_query:result1, result_second_query:result2});
             if(err != null) {
                 console.log(err);
             }
