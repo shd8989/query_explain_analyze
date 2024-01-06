@@ -389,11 +389,19 @@ app.get(api_context + '/query-plan-list', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_result_querytest ";
-        const conditions = "WHERE db_seq = $1 ";
-        const orderQuery = "ORDER BY query_seq desc";
-        const sql = selectQuery + (req.query.dbSeq !== '' ? conditions : '') + orderQuery;
-        pool.query(sql, (req.query.dbSeq !== '' ? [req.query.dbSeq] : ''), (err, response) => {
+        const selectQuery = "SELECT e.seq AS first_seq, e.test_scenario AS first_scenario, e.nickname AS first_nickname, e.query_seq AS first_query_seq, e.is_success AS first_is_success, e.execute_time AS first_exec_time, "
+            + "    f.seq AS second_seq, f.test_scenario AS second_scenario, f.nickname AS second_nickname, f.query_seq AS second_query_seq, f.is_success AS second_is_success, f.execute_time AS second_exec_time "
+            + "FROM (SELECT row_number() over (ORDER BY a.query_seq DESC) AS seq, a.test_scenario, b.nickname, a.query_seq, a.is_success, a.execute_time "
+            + "    FROM tb_result_querytest a "
+            + "    JOIN tb_database b ON a.db_seq = b.db_seq "
+            + "    WHERE a.test_scenario = $1 AND a.db_seq = $2) AS e "
+            + "FULL OUTER JOIN (SELECT row_number() over (ORDER BY c.query_seq DESC) AS seq, c.test_scenario, d.nickname, c.query_seq, c.is_success, c.execute_time "
+            + "    FROM tb_result_querytest c "
+            + "    JOIN tb_database d ON c.db_seq = d.db_seq "
+            + "    WHERE c.test_scenario = $3 AND c.db_seq = $4) AS f "
+            + "ON e.seq = f.seq";
+        var values = [req.query.first_scenario, req.query.first_db_seq, req.query.second_scenario, req.query.second_db_seq]
+        pool.query(selectQuery, values, (err, response) => {
             if(err != null) {
                 console.log(err);
             }
