@@ -14,7 +14,14 @@ function QueryRow({data}) {
           <td>{item.second_nickname}</td>
           <td>{item.second_query_seq}</td>
           <td>{item.second_is_success}</td>
-          <td></td>
+          <td>{
+            item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time > item.second_exec_time ? item.first_nickname
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time < item.second_exec_time ? item.second_nickname
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time === item.second_exec_time ? '동일'
+            : item.first_is_success === 'Success' && item.second_is_success === 'Fail' ? item.first_nickname
+            : item.first_is_success === 'Fail' && item.second_is_success === 'Success' ? item.second_nickname
+            : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : '측정 불가'
+          }</td>
           <td></td>
         </tr>
       ))}

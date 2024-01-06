@@ -132,9 +132,8 @@ app.post(api_context + '/exec-single-query', (req, res) => {
             const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
             pool.query(query)
             .then((response2) => {
-                client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime])
+                client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
                 .catch((e) => console.error(e.stack));
-                console.log(response2);
                 res.send(200);
             })
             .catch((e) => {
@@ -161,7 +160,7 @@ app.post(api_context + '/exec-multi-query', (req, res) => {
                     var execTime = '';
                     if(response2.rows.length == 1) {
                         execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
-                        client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime])
+                        client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
                         .catch((e) => console.error(e.stack));
                         res.send(200);
                     } else if(response2.rows.length > 1) {
@@ -174,7 +173,7 @@ app.post(api_context + '/exec-multi-query', (req, res) => {
                             }
                         }
                         execTime = Object.values(response2.rows[response2.rows.length-1])[0].split(":")[1].trim();
-                        client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', '', execTime])
+                        client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', '', execTime.substring(0, execTime.length-2)])
                         .catch((e) => console.error(e.stack));
                         res.send(200);
                     }
