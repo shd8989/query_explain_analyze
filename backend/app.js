@@ -125,16 +125,22 @@ app.post(api_context + '/exec-single-query', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
-        client.query(query)
-        .then((response) => {
-            client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
-            .catch((e) => console.error(e.stack));
-            res.send(200);
-        })
-        .catch((e) => {
-            client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
-            .catch((e) => console.error(e.stack));
+        var execTime = '';
+        pool.query("EXPLAIN ANALYZE " + query, (err, response) => {
+            execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
+
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
+            pool.query(query)
+            .then((response2) => {
+                client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime])
+                .catch((e) => console.error(e.stack));
+                console.log(response2);
+                res.send(200);
+            })
+            .catch((e) => {
+                client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
+                .catch((e) => console.error(e.stack));
+            });
         });
     });
     pool.on('end', function() {client.end();});
