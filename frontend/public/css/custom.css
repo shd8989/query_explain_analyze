@@ -21,3 +21,7 @@
   white-space: pre-wrap;
   text-align: left;
 }
+
+.header_rowspan {
+  vertical-align: middle;
+}

@@ -125,16 +125,21 @@ app.post(api_context + '/exec-single-query', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
-        client.query(query)
-        .then((response) => {
-            client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
-            .catch((e) => console.error(e.stack));
-            res.send(200);
-        })
-        .catch((e) => {
-            client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
-            .catch((e) => console.error(e.stack));
+        var execTime = '';
+        pool.query("EXPLAIN ANALYZE " + query, (err, response) => {
+            execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
+
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
+            pool.query(query)
+            .then((response2) => {
+                client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
+                .catch((e) => console.error(e.stack));
+                res.send(200);
+            })
+            .catch((e) => {
+                client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
+                .catch((e) => console.error(e.stack));
+            });
         });
     });
     pool.on('end', function() {client.end();});
@@ -147,31 +152,36 @@ app.post(api_context + '/exec-multi-query', (req, res) => {
             console.log('connection error', err);
         }
         for(var i=0; i<data.length; i++) {
-            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, now())";
+            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
             let query = data[i];
-            client.query(query)
-            .then((response) => {
-                if(response.rows.length == 1) {
-                    client.query(insertQuery, [dbSeq, query, scenario, Object.values(response.rows[0])[0], 'Success', ''])
-                    .catch((e) => console.error(e.stack));
-                    res.send(200);
-                } else if(response.rows.length > 1) {
-                    var multiRes = '';
-                    for(var i=0; i<response.rows.length; i++) {
-                        if(i < response.rows.length-1 ) {
-                            multiRes += Object.values(response.rows[i])[0] + '\n';
-                        } else if(i == response.rows.length-1 ) {
-                            multiRes += Object.values(response.rows[i])[0];
+            pool.query("EXPLAIN ANALYZE " + query, (err, response) => {
+                client.query(query)
+                .then((response2) => {
+                    var execTime = '';
+                    if(response2.rows.length == 1) {
+                        execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
+                        client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
+                        .catch((e) => console.error(e.stack));
+                        res.send(200);
+                    } else if(response2.rows.length > 1) {
+                        var multiRes = '';
+                        for(var i=0; i<response2.rows.length; i++) {
+                            if(i < response2.rows.length-1 ) {
+                                multiRes += Object.values(response2.rows[i])[0] + '\n';
+                            } else if(i == response2.rows.length-1 ) {
+                                multiRes += Object.values(response2.rows[i])[0];
+                            }
                         }
+                        execTime = Object.values(response2.rows[response2.rows.length-1])[0].split(":")[1].trim();
+                        client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', '', execTime.substring(0, execTime.length-2)])
+                        .catch((e) => console.error(e.stack));
+                        res.send(200);
                     }
-                    client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', ''])
+                })
+                .catch((e) => {
+                    client.query(insertQuery, [dbSeq, query, scenario, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
                     .catch((e) => console.error(e.stack));
-                    res.send(200);
-                }
-            })
-            .catch((e) => {
-                client.query(insertQuery, [dbSeq, query, scenario, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint])
-                .catch((e) => console.error(e.stack));
+                });
             });
         }
     });
@@ -389,11 +399,19 @@ app.get(api_context + '/query-plan-list', (req, res) => {
         if(err) {
             console.log('connection error', err);
         }
-        const selectQuery = "SELECT * FROM tb_result_querytest ";
-        const conditions = "WHERE db_seq = $1 ";
-        const orderQuery = "ORDER BY query_seq desc";
-        const sql = selectQuery + (req.query.dbSeq !== '' ? conditions : '') + orderQuery;
-        pool.query(sql, (req.query.dbSeq !== '' ? [req.query.dbSeq] : ''), (err, response) => {
+        const selectQuery = "SELECT e.seq AS first_seq, e.test_scenario AS first_scenario, e.nickname AS first_nickname, e.query_seq AS first_query_seq, e.is_success AS first_is_success, e.execute_time AS first_exec_time, "
+            + "    f.seq AS second_seq, f.test_scenario AS second_scenario, f.nickname AS second_nickname, f.query_seq AS second_query_seq, f.is_success AS second_is_success, f.execute_time AS second_exec_time "
+            + "FROM (SELECT row_number() over (ORDER BY a.query_seq DESC) AS seq, a.test_scenario, b.nickname, a.query_seq, a.is_success, a.execute_time "
+            + "    FROM tb_result_querytest a "
+            + "    JOIN tb_database b ON a.db_seq = b.db_seq "
+            + "    WHERE a.test_scenario = $1 AND a.db_seq = $2) AS e "
+            + "FULL OUTER JOIN (SELECT row_number() over (ORDER BY c.query_seq DESC) AS seq, c.test_scenario, d.nickname, c.query_seq, c.is_success, c.execute_time "
+            + "    FROM tb_result_querytest c "
+            + "    JOIN tb_database d ON c.db_seq = d.db_seq "
+            + "    WHERE c.test_scenario = $3 AND c.db_seq = $4) AS f "
+            + "ON e.seq = f.seq";
+        var values = [req.query.first_scenario, req.query.first_db_seq, req.query.second_scenario, req.query.second_db_seq]
+        pool.query(selectQuery, values, (err, response) => {
             if(err != null) {
                 console.log(err);
             }
