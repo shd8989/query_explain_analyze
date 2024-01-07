@@ -63,6 +63,31 @@ const QueryExecute = () => {
     }
   }, []);
 
+  const fileDownload = () => {
+    /*
+    const file = new File([""], '../../../public/file/multi_query.xlsx');
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: "array", bookVBA: true });
+
+      const sheetName = wb.SheetNames[0];
+      const sheet = wb.Sheets[sheetName];
+      XLSX.utils.sheet_to_json(sheet);
+      XLSX.writeFile(wb, "sample.xlsx");
+    };
+    reader.readAsArrayBuffer(file);
+
+    // XLSX.readFile('../../../public/file/multi_query.xlsx');
+    console.log('fileDonwload');
+    // XLSX.writeFile(wb, "result.xlsx");
+    */
+    let workbook = XLSX.readFile('../../../public/file/multi_query.xlsx');
+    let sheet_name_list = workbook.SheetNames;
+    let xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    console.log(xlData);
+  }
+
   function textChange(e) {
     setText(e.target.value);
   };
@@ -97,6 +122,9 @@ const QueryExecute = () => {
                 <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioMulti"></textarea>
               </div>
               <input className="form-control" type="file" id="formFile" onChange={(e) => fileChange(e.target.files)} accept=".xlsx, .xls" />
+              <div className="card bg-primary text-white mb-4 mouse_hover">
+                <div className="card-body" onClick={() => fileDownload()}>샘플 다운로드</div>
+              </div>
               <div className="warning_font">(Warning) This only reads data from the first sheet.</div>
               <div className="col-xl-3 col-md-6">
                 <div className="card bg-primary text-white mb-4 mouse_hover">
