@@ -15,14 +15,21 @@ function QueryRow({data}) {
           <td>{item.second_query_seq}</td>
           <td>{item.second_is_success}</td>
           <td>{
-            item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time > item.second_exec_time ? item.first_nickname
-            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time < item.second_exec_time ? item.second_nickname
+            item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time > item.second_exec_time ? item.second_nickname
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time < item.second_exec_time ? item.first_nickname
             : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time === item.second_exec_time ? '동일'
             : item.first_is_success === 'Success' && item.second_is_success === 'Fail' ? item.first_nickname
             : item.first_is_success === 'Fail' && item.second_is_success === 'Success' ? item.second_nickname
             : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : '측정 불가'
           }</td>
-          <td></td>
+          <td>{
+            item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time > item.second_exec_time ? (item.first_exec_time / item.second_exec_time).toPrecision(3)
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time < item.second_exec_time ? (item.second_exec_time / item.first_exec_time).toPrecision(3)
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time === item.second_exec_time ? '동일'
+            : item.first_is_success === 'Success' && item.second_is_success === 'Fail' ? item.first_nickname
+            : item.first_is_success === 'Fail' && item.second_is_success === 'Success' ? item.second_nickname
+            : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : '측정 불가'
+          }</td>
         </tr>
       ))}
     </>
@@ -82,7 +89,6 @@ const QueryPlanList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(10);
 
-  console.log(queryData);
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const currentRecords = queryData.slice(indexOfFirstRecord, indexOfLastRecord);
@@ -110,11 +116,15 @@ const QueryPlanList = () => {
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col">
-            <Selectbox sendDataToParent={sendDataToParent} ordinalNumber={'first'} />
+              <div>DB1</div>
+              <div>DB2</div>
+            </div>
+            <div className="col">
+              <Selectbox sendDataToParent={sendDataToParent} ordinalNumber={'first'} />
               <Selectbox sendDataToParent={sendDataToParent} ordinalNumber={'second'} />
             </div>
             <div className="col">
-            <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'first'} scenario={scenario1} />
+              <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'first'} scenario={scenario1} />
               <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'second'} scenario={scenario2} />
             </div>
           </div>
