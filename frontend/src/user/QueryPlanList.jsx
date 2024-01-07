@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import axios from 'axios';
 import {Selectbox, Selectbox2, Selectbox3} from '../common/Selectbox';
 import Pagination from '../common/Pagination';
+import * as XLSX from 'xlsx';
 
 function QueryRow({data}) {
   return (
@@ -110,6 +111,17 @@ const QueryPlanList = () => {
     }
   }, [dbSeq1, dbSeq2]);
 
+  const excelDownload = (excelData) => {
+    if(excelData.length > 0) {
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      XLSX.writeFile(wb, "result.xlsx");
+    } else {
+      alert('엑셀에 저장할 데이터가 없습니다.');
+    }
+  }
+
   return (
     <>
       <main>
@@ -126,6 +138,11 @@ const QueryPlanList = () => {
             <div className="col">
               <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'first'} scenario={scenario1} />
               <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'second'} scenario={scenario2} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="card bg-primary text-white mb-4 mouse_hover">
+              <div className="card-body" onClick={() => excelDownload(queryData)}>엑셀 다운로드</div>
             </div>
           </div>
           <div className="row">
