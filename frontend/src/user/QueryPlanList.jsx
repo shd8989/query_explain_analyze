@@ -8,27 +8,27 @@ function QueryRow({data}) {
     <>
       {data.map(item => (
         <tr key={item.first_seq}>
-          <td>{item.first_nickname}</td>
           <td>{item.first_query_seq}</td>
           <td>{item.first_is_success}</td>
-          <td>{item.second_nickname}</td>
+          <td>{item.first_exec_time !== '' && Number(item.first_exec_time) >= 10 ? Number(item.first_exec_time).toFixed(1) : item.first_exec_time}</td>
           <td>{item.second_query_seq}</td>
           <td>{item.second_is_success}</td>
+          <td>{item.second_exec_time !== '' && Number(item.second_exec_time) >= 10 ? Number(item.second_exec_time).toFixed(1) : item.second_exec_time}</td>
           <td>{
-            item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time > item.second_exec_time ? item.second_nickname
-            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time < item.second_exec_time ? item.first_nickname
+            item.first_is_success === 'Success' && item.second_is_success === 'Success' && Number(item.first_exec_time) < Number(item.second_exec_time) ? item.first_nickname
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && Number(item.first_exec_time) > Number(item.second_exec_time) ? item.second_nickname
             : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time === item.second_exec_time ? '동일'
             : item.first_is_success === 'Success' && item.second_is_success === 'Fail' ? item.first_nickname
             : item.first_is_success === 'Fail' && item.second_is_success === 'Success' ? item.second_nickname
-            : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : '측정 불가'
+            : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : ''
           }</td>
           <td>{
-            item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time > item.second_exec_time ? (item.first_exec_time / item.second_exec_time).toPrecision(3)
-            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time < item.second_exec_time ? (item.second_exec_time / item.first_exec_time).toPrecision(3)
+            item.first_is_success === 'Success' && item.second_is_success === 'Success' && Number(item.first_exec_time) < Number(item.second_exec_time) ? (item.second_exec_time / item.first_exec_time).toFixed(2)
+            : item.first_is_success === 'Success' && item.second_is_success === 'Success' && Number(item.first_exec_time) > Number(item.second_exec_time) ? (item.first_exec_time / item.second_exec_time).toFixed(2)
             : item.first_is_success === 'Success' && item.second_is_success === 'Success' && item.first_exec_time === item.second_exec_time ? '동일'
             : item.first_is_success === 'Success' && item.second_is_success === 'Fail' ? item.first_nickname
             : item.first_is_success === 'Fail' && item.second_is_success === 'Success' ? item.second_nickname
-            : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : '측정 불가'
+            : item.first_is_success === 'Fail' && item.second_is_success === 'Fail' ? '측정 불가' : ''
           }</td>
         </tr>
       ))}
@@ -132,14 +132,18 @@ const QueryPlanList = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th scope="col">Database1</th>
+                  <th colSpan="3">Database1</th>
+                  <th colSpan="3">Database2</th>
+                  <th rowSpan="2" className='header_rowspan'>Faster</th>
+                  <th rowSpan="2" className='header_rowspan'>Rate</th>
+                </tr>
+                <tr>
                   <th scope="col">Query No</th>
                   <th scope="col">Success</th>
-                  <th scope="col">Database2</th>
+                  <th scope="col">Exec Time(ms)</th>
                   <th scope="col">Query No</th>
                   <th scope="col">Success</th>
-                  <th scope="col">Faster</th>
-                  <th scope="col">Rate</th>
+                  <th scope="col">Exec Time(ms)</th>
                 </tr>
               </thead>
               <tbody>
