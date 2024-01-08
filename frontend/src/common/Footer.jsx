@@ -6,11 +6,9 @@ const Footer = () => {
         <footer className="py-4 bg-light mt-auto">
           <div className="container-fluid px-4">
             <div className="d-flex align-items-center justify-content-between small">
-              <div className="text-muted">Copyright © Your Website 2023</div>
+              <div className="text-muted">Copyright © Hyundong's Website 2024</div>
               <div>
-                <a href="#">Privacy Policy</a>
-                ·
-                <a href="#">Terms &amp; Conditions</a>
+                <a href="https://github.com/shd8989/query_explain_analyze/issues">Register issue</a>
               </div>
             </div>
           </div>
