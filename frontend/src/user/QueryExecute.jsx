@@ -64,28 +64,12 @@ const QueryExecute = () => {
   }, []);
 
   const fileDownload = () => {
-    /*
-    const file = new File([""], '../../../public/file/multi_query.xlsx');
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, { type: "array", bookVBA: true });
-
-      const sheetName = wb.SheetNames[0];
-      const sheet = wb.Sheets[sheetName];
-      XLSX.utils.sheet_to_json(sheet);
-      XLSX.writeFile(wb, "sample.xlsx");
-    };
-    reader.readAsArrayBuffer(file);
-
-    // XLSX.readFile('../../../public/file/multi_query.xlsx');
-    console.log('fileDonwload');
-    // XLSX.writeFile(wb, "result.xlsx");
-    */
-    let workbook = XLSX.readFile('../../../public/file/multi_query.xlsx');
-    let sheet_name_list = workbook.SheetNames;
-    let xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-    console.log(xlData);
+    fetch("assets/files/multi_query.xlsx")
+      .then(res => res.arrayBuffer())
+      .then(data => {
+        const wb = XLSX.read(data, { type: "array" });
+        XLSX.writeFile(wb, "sample.xlsx");
+      });
   }
 
   function textChange(e) {
