@@ -134,7 +134,7 @@ const AnalyzeQuery = () => {
       <main>
         <div className="container-fluid px-4">
           <div className="row">
-            <ul className="nav nav-pills">
+            <ul className="nav nav-pills tab">
               <li className={activeTab === "tab1" ? "nav-item active" : ""} onClick={handleTab1}>
                 <a className={activeTab === "tab1" ? "nav-link active" : ""} aria-current="page" href="#">Compare Queries</a>
               </li>

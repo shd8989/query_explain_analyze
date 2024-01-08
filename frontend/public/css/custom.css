@@ -25,3 +25,42 @@
 .header_rowspan {
   vertical-align: middle;
 }
+
+.margin10 {
+  margin: 10px 0;
+}
+
+.flex_align_item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: -10px;
+}
+
+#formFile {
+  width: 250px;
+  height: 38px;
+}
+
+.btn_download {
+  min-width: 100px;
+  font-size: 0.75rem;
+}
+
+.btn_wrap {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tab {
+  height: 50px;
+  font-size: 1rem;
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.query_compare {
+  width: 50%;
+  white-space: pre-line;
+}

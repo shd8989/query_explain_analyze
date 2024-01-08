@@ -128,8 +128,8 @@ const QueryPlanList = () => {
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col">
-              <div>DB1</div>
-              <div>DB2</div>
+              <div className="form-select-lg mb-3">DB1</div>
+              <div className="form-select-lg mb-3">DB2</div>
             </div>
             <div className="col">
               <Selectbox sendDataToParent={sendDataToParent} ordinalNumber={'first'} />
@@ -140,8 +140,9 @@ const QueryPlanList = () => {
               <Selectbox2 sendDataToParent={sendDataToParent2} ordinalNumber={'second'} scenario={scenario2} />
             </div>
           </div>
-          <div className="row">
-            <div className="card bg-primary text-white mb-4 mouse_hover">
+          <div className="margin10 flex_align_item">
+            <div></div>
+            <div className="card bg-primary text-white mb-4 mouse_hover btn_download btn_wrap">
               <div className="card-body" onClick={() => excelDownload(queryData)}>엑셀 다운로드</div>
             </div>
           </div>

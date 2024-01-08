@@ -100,36 +100,41 @@ const QueryExecute = () => {
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col">
-              <h1 className="mt-4">File upload with query</h1>
+              <h2 className="mt-4">Execute a single query</h2>
               <Selectbox2 sendDataToParent={sendDataToParent} ordinalNumber={'-1'} scenario={scenario} />
-              <div className="form-floating">
-                <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioMulti"></textarea>
+              <div className="form-floating margin10">
+                <input className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioSingle" type="text" />
+                <label htmlFor="scenarioMulti">Single Scenario</label>
               </div>
-              <input className="form-control" type="file" id="formFile" onChange={(e) => fileChange(e.target.files)} accept=".xlsx, .xls" />
-              <div className="card bg-primary text-white mb-4 mouse_hover">
-                <div className="card-body" onClick={() => fileDownload()}>샘플 다운로드</div>
-              </div>
-              <div className="warning_font">(Warning) This only reads data from the first sheet.</div>
-              <div className="col-xl-3 col-md-6">
-                <div className="card bg-primary text-white mb-4 mouse_hover">
-                  <div className="card-body" onClick={fileUpload}>Execute Multi Queries</div>
-                </div>
-              </div>
-            </div>
-            <div className="col">
-              <h1 className="mt-4">Execute a query</h1>
-              <Selectbox2 sendDataToParent={sendDataToParent} ordinalNumber={'-1'} scenario={scenario} />
-              <div className="form-floating">
-                <textarea className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioSingle"></textarea>
-              </div>
-              <div className="form-floating">
-                <textarea className="form-control" onChange={(e) => textChange(e)} id="floatingTextarea"></textarea>
+              <div className="form-floating margin10">
+                <input className="form-control" onChange={(e) => textChange(e)} id="floatingTextarea" type="text" />
+                <label htmlFor="scenarioMulti">Query</label>
               </div>
               <div className="col-xl-3 col-md-6">
                 <div className="card bg-primary text-white mb-4 mouse_hover">
                   <div className="card-body" onClick={execQuery}>Execute Single Query</div>
                 </div>
               </div>
+            </div>
+            <div className="col">
+              <h2 className="mt-4">File upload with query</h2>
+              <Selectbox2 sendDataToParent={sendDataToParent} ordinalNumber={'-1'} scenario={scenario} />
+              <div className="form-floating margin10">
+                <input className="form-control" onChange={(e) => scenarioChange(e)} id="scenarioMulti" type="text" />
+                <label htmlFor="scenarioMulti">Multi Scenario</label>
+              </div>
+              <div className="margin10 flex_align_item">
+                <input className="form-control" type="file" id="formFile" onChange={(e) => fileChange(e.target.files)} accept=".xlsx, .xls" />
+                <div className="card bg-primary text-white mb-4 mouse_hover btn_download">
+                  <div className="card-body" onClick={() => fileDownload()}>샘플 다운로드</div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-md-6">
+                <div className="card bg-primary text-white mb-4 mouse_hover">
+                  <div className="card-body" onClick={fileUpload}>Execute Multi Queries</div>
+                </div>
+              </div>
+              <div className="warning_font">(Warning) This only reads data from the first sheet.</div>
             </div>
           </div>
         </div>
