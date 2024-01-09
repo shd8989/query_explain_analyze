@@ -93,10 +93,11 @@ app.get(api_context + '/dbconn-list', (req, res) => {
             // const selectQuery = "SELECT * FROM tb_database WHERE db_seq = $1";
             pool.query(selectQuery, [req.query.pDbSeq[0]], (err, response) => {
                 if(err != null) {
-                    console.log(err);
+                    res.send(err.code);
+                } else {
+                    data = response.rows;
+                    res.send(data);
                 }
-                data = response.rows;
-                res.send(data);
             });
         });
         pool.on('end', function() {client.end();});
@@ -108,10 +109,11 @@ app.get(api_context + '/dbconn-list', (req, res) => {
             const selectQuery = "SELECT * FROM tb_database";
             pool.query(selectQuery, (err, response) => {
                 if(err != null) {
-                    console.log(err);
+                    res.send(err.code);
+                } else {
+                    data = response.rows;
+                    res.send(data);
                 }
-                data = response.rows;
-                res.send(data);
             });
         });
         pool.on('end', function() {client.end();});
@@ -204,10 +206,11 @@ app.get(api_context + '/select-scenario', (req, res) => {
             + "GROUP BY a.test_scenario"
         pool.query(selectQuery, (err, response) => {
             if(err != null) {
-                console.log(err);
+                res.send(err.code);
+            } else {
+                data = response.rows;
+                res.send(data);
             }
-            data = response.rows;
-            res.send(data);
         });
     });
     pool.on('end', function() {client.end();});
@@ -236,10 +239,11 @@ app.get(api_context + '/select-db', (req, res) => {
         }
         pool.query(selectQuery, (req.query.test_scenario !== '' && req.query.test_scenario !== undefined ? values : []), (err, response) => {
             if(err != null) {
-                console.log(err);
+                res.send(err.code);
+            } else {
+                data = response.rows;
+                res.send(data);
             }
-            data = response.rows;
-            res.send(data);
         });
     });
     pool.on('end', function() {client.end();});
@@ -384,9 +388,10 @@ app.get(api_context + '/query-plan', (req, res) => {
             }
             result2 = multiRes;
             
-            res.send({result_first_query:result1, result_second_query:result2});
             if(err != null) {
-                console.log(err);
+                res.send(err.code);
+            } else {
+                res.send({result_first_query:result1, result_second_query:result2});
             }
         });
     });
@@ -413,10 +418,11 @@ app.get(api_context + '/query-plan-list', (req, res) => {
         var values = [req.query.first_scenario, req.query.first_db_seq, req.query.second_scenario, req.query.second_db_seq]
         pool.query(selectQuery, values, (err, response) => {
             if(err != null) {
-                console.log(err);
+                res.send(err.code);
+            } else {
+                data = response.rows;
+                res.send(data);
             }
-            data = response.rows;
-            res.send(data);
         });
     });
     pool.on('end', function() {client.end();});
