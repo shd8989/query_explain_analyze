@@ -22,31 +22,31 @@ const DbCreate = () => {
     setDbUserPwConfirm(dbUserPwConfirm => dbUserPwConfirm);
     setResultDbYn(resultDbYn => resultDbYn);
 
-    if(nickname !== '') {
+    if(nickname === '') {
       alert('Nickname을 입력해주세요.');
       return false;
     }
-    if(dbHost !== '') {
+    if(dbHost === '') {
       alert('Host를 입력해주세요.');
       return false;
     }
-    if(dbPort !== '') {
+    if(dbPort === '') {
       alert('Port를 입력해주세요.');
       return false;
     }
-    if(dbName !== '') {
+    if(dbName === '') {
       alert('DB명을 입력해주세요.');
       return false;
     }
-    if(dbUser !== '') {
+    if(dbUser === '') {
       alert('DB유저를 입력해주세요.');
       return false;
     }
-    if(dbUserPw !== '') {
+    if(dbUserPw === '') {
       alert('비밀번호를 입력해주세요.');
       return false;
     }
-    if(dbUserPwConfirm !== '') {
+    if(dbUserPwConfirm === '') {
       alert('비밀번호 확인을 입력해주세요.');
       return false;
     }
