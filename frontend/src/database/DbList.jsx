@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Pagination from '../common/Pagination';
+import {useNavigate} from "react-router";
 
 function QueryRow({data}) {
   return (
@@ -33,6 +34,7 @@ const DbList = () => {
     resultdb_yn: '',
     insert_dt: ''
   }]);
+  const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(10);
@@ -45,19 +47,24 @@ const DbList = () => {
   useEffect(() => {
     const selectQuery = async () => {
       const response = await axios.get('/api/v1/dbconn-list', {});
-      const newQueryData = await response.data.sort((a, b) => b.db_seq - a.db_seq).map((rowData) => ({
-          db_seq: rowData.db_seq,
-          nickname: rowData.nickname,
-          db_host: rowData.db_host,
-          db_port: rowData.db_port,
-          db_name: rowData.db_name,
-          db_user: rowData.db_user,
-          db_user_pw: rowData.db_user_pw,
-          resultdb_yn: rowData.resultdb_yn,
-          insert_dt: rowData.insert_dt
-        })
-      )
-      return newQueryData;
+      if(response.data === 'ECONNREFUSED') {
+        alert('데이터베이스 연결 에러입니다.');
+        navigate("/dbconn_create");
+      } else {
+        const newQueryData = await response.data.sort((a, b) => b.db_seq - a.db_seq).map((rowData) => ({
+            db_seq: rowData.db_seq,
+            nickname: rowData.nickname,
+            db_host: rowData.db_host,
+            db_port: rowData.db_port,
+            db_name: rowData.db_name,
+            db_user: rowData.db_user,
+            db_user_pw: rowData.db_user_pw,
+            resultdb_yn: rowData.resultdb_yn,
+            insert_dt: rowData.insert_dt
+          })
+        )
+        return newQueryData;
+      }
     };
     selectQuery().then(res => setQueryData(res));
   }, []);

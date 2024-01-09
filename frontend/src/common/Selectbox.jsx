@@ -1,21 +1,28 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import {useNavigate} from "react-router";
 
 const Selectbox = ({sendDataToParent, ordinalNumber}) => {
   const [scenario, setScenario] = useState([{
     test_scenario: '',
     db_seq: []
   }]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const scenario_info = async () => {
       const response = await axios.get('/api/v1/select-scenario', {});
-      const newData = await response.data.map((rowData) => ({
-          test_scenario: rowData.test_scenario,
-          db_seq: rowData.db_seq
-        })
-      );
-      return newData;
+      if(response.data === 'ECONNREFUSED') {
+        alert('데이터베이스 연결 에러입니다.');
+        navigate("/dbconn_create");
+      } else {
+        const newData = await response.data.map((rowData) => ({
+            test_scenario: rowData.test_scenario,
+            db_seq: rowData.db_seq
+          })
+        );
+        return newData;
+      }
     };
     scenario_info().then(res => setScenario(res));
   }, []);
@@ -39,6 +46,7 @@ const Selectbox2 = ({sendDataToParent, ordinalNumber, scenario}) => {
     nickname: '',
     db_seq: ''
   }]);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const db_info = async () => {
@@ -49,12 +57,17 @@ const Selectbox2 = ({sendDataToParent, ordinalNumber, scenario}) => {
         params = {};
       }
       const response = await axios.get('/api/v1/select-db', params);
-      const newData = await response.data.map((rowData) => ({
-          nickname: rowData.nickname,
-          db_seq: rowData.db_seq
-        })
-      );
-      return newData;
+      if(response.data === 'ECONNREFUSED') {
+        alert('데이터베이스 연결 에러입니다.');
+        navigate("/dbconn_create");
+      } else {
+        const newData = await response.data.map((rowData) => ({
+            nickname: rowData.nickname,
+            db_seq: rowData.db_seq
+          })
+        );
+        return newData;
+      }
     };
     db_info().then(res => setDb(res));
   }, [scenario]);
