@@ -123,68 +123,128 @@ app.get(api_context + '/dbconn-list', (req, res) => {
 // query execute
 app.post(api_context + '/exec-single-query', (req, res) => {
     const {query, dbSeq, scenario} = req.body;
+    let db_host, db_port, db_name, db_user, db_user_pw = '';
     pool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
-        }
-        var execTime = '';
-        pool.query("EXPLAIN ANALYZE " + query, (err, response) => {
-            execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
+        } else {
+            client.query("SELECT db_host, db_port, db_name, db_user, db_user_pw FROM tb_database WHERE db_seq = $1", [dbSeq], (err, response) => {
+                if(err != null) {
+                    res.send(err.code);
+                } else {
+                    console.log('response.rows[0]', response.rows[0]);
+                    db_host = response.rows[0].db_host;
+                    db_port = response.rows[0].db_port;
+                    db_name = response.rows[0].db_name;
+                    db_user = response.rows[0].db_user;
+                    db_user_pw = response.rows[0].db_user_pw;
 
-            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
-            pool.query(query)
-            .then((response2) => {
-                client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
-                .catch((e) => console.error(e.stack));
-                res.send(200);
-            })
-            .catch((e) => {
-                client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
-                .catch((e) => console.error(e.stack));
+                    const newPool = new Pool({
+                        host: db_host,
+                        port: db_port,
+                        database: db_name,
+                        user: db_user,
+                        password: db_user_pw,
+                        max: 30,
+                        idleTimeoutMillis: 1000
+                    });
+                    newPool.connect(function(err, client) {
+                        if(err) {
+                            res.send(err);
+                        } else {
+                            var execTime = '';
+                            newPool.query("EXPLAIN ANALYZE " + query, (err, response) => {
+                                execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
+                    
+                                const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
+                                newPool.query(query)
+                                .then((response2) => {
+                                    client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
+                                    .catch((e) => console.error(e.stack));
+                                    res.send(200);
+                                })
+                                .catch((e) => {
+                                    client.query(insertQuery, [dbSeq, query, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
+                                    .catch((e) => console.error(e.stack));
+                                });
+                            });
+                        }
+                    });
+                    newPool.on('end', function() {client.end();});
+                }
             });
-        });
+        }
     });
     pool.on('end', function() {client.end();});
 });
 
 app.post(api_context + '/exec-multi-query', (req, res) => {
     const {data, dbSeq, scenario} = req.body;
+    let db_host, db_port, db_name, db_user, db_user_pw = '';
     pool.connect(function(err, client) {
         if(err) {
             console.log('connection error', err);
-        }
-        for(var i=0; i<data.length; i++) {
-            const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
-            let query = data[i];
-            pool.query("EXPLAIN ANALYZE " + query, (err, response) => {
-                client.query(query)
-                .then((response2) => {
-                    var execTime = '';
-                    if(response2.rows.length == 1) {
-                        execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
-                        client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
-                        .catch((e) => console.error(e.stack));
-                        res.send(200);
-                    } else if(response2.rows.length > 1) {
-                        var multiRes = '';
-                        for(var i=0; i<response2.rows.length; i++) {
-                            if(i < response2.rows.length-1 ) {
-                                multiRes += Object.values(response2.rows[i])[0] + '\n';
-                            } else if(i == response2.rows.length-1 ) {
-                                multiRes += Object.values(response2.rows[i])[0];
+        } else {
+            client.query("SELECT db_host, db_port, db_name, db_user, db_user_pw FROM tb_database WHERE db_seq = $1", [dbSeq], (err, response) => {
+                if(err != null) {
+                    res.send(err.code);
+                } else {
+                    db_host = response.rows[0].db_host;
+                    db_port = response.rows[0].db_port;
+                    db_name = response.rows[0].db_name;
+                    db_user = response.rows[0].db_user;
+                    db_user_pw = response.rows[0].db_user_pw;
+
+                    const newPool = new Pool({
+                        host: db_host,
+                        port: db_port,
+                        database: db_name,
+                        user: db_user,
+                        password: db_user_pw,
+                        max: 30,
+                        idleTimeoutMillis: 1000
+                    });
+                    newPool.connect(function(err, client) {
+                        if(err) {
+                            res.send(err);
+                        } else {
+                            for(var i=0; i<data.length; i++) {
+                                const insertQuery = "INSERT INTO tb_result_querytest (db_seq, query, test_scenario, return_data, is_success, error_msg, execute_time, insert_dt) VALUES ($1, $2, $3, $4, $5, $6, $7, now())";
+                                let query = data[i];
+                                pool.query("EXPLAIN ANALYZE " + query, (err, response) => {
+                                    client.query(query)
+                                    .then((response2) => {
+                                        var execTime = '';
+                                        if(response2.rows.length == 1) {
+                                            execTime = Object.values(response.rows[response.rows.length-1])[0].split(":")[1].trim();
+                                            client.query(insertQuery, [dbSeq, query, scenario, Object.values(response2.rows[0])[0], 'Success', '', execTime.substring(0, execTime.length-2)])
+                                            .catch((e) => console.error(e.stack));
+                                            res.send(200);
+                                        } else if(response2.rows.length > 1) {
+                                            var multiRes = '';
+                                            for(var i=0; i<response2.rows.length; i++) {
+                                                if(i < response2.rows.length-1 ) {
+                                                    multiRes += Object.values(response2.rows[i])[0] + '\n';
+                                                } else if(i == response2.rows.length-1 ) {
+                                                    multiRes += Object.values(response2.rows[i])[0];
+                                                }
+                                            }
+                                            execTime = Object.values(response2.rows[response2.rows.length-1])[0].split(":")[1].trim();
+                                            client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', '', execTime.substring(0, execTime.length-2)])
+                                            .catch((e) => console.error(e.stack));
+                                            res.send(200);
+                                        }
+                                    })
+                                    .catch((e) => {
+                                        client.query(insertQuery, [dbSeq, query, scenario, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
+                                        .catch((e) => console.error(e.stack));
+                                    });
+                                });
                             }
                         }
-                        execTime = Object.values(response2.rows[response2.rows.length-1])[0].split(":")[1].trim();
-                        client.query(insertQuery, [dbSeq, query, scenario, multiRes, 'Success', '', execTime.substring(0, execTime.length-2)])
-                        .catch((e) => console.error(e.stack));
-                        res.send(200);
-                    }
-                })
-                .catch((e) => {
-                    client.query(insertQuery, [dbSeq, query, scenario, '', 'Fail', 'Error code: ' + e.code + ":: Hint: " + e.hint, ''])
-                    .catch((e) => console.error(e.stack));
-                });
-            });
+                    });
+                }
+            })
         }
     });
     pool.on('end', function() {client.end();});

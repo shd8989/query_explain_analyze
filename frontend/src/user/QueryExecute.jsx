@@ -20,8 +20,10 @@ const QueryExecute = () => {
         scenario: scenario
       })
       .then(response => {
-        if(response.status === 200) {
+        if(response.status === 200 && response.data === "OK") {
           alert('입력한 쿼리를 저장하였습니다.');
+        } else {
+          alert('데이터베이스 연결에 실패하였습니다.');
         }
       });
     }
@@ -37,8 +39,10 @@ const QueryExecute = () => {
         scenario: scenario
       })
       .then(response => {
-        if(response.status === 200) {
+        if(response.status === 200 && response.data === "OK") {
           alert('파일에 저장된 쿼리를 저장하였습니다.');
+        } else {
+          alert('데이터베이스 연결에 실패하였습니다.');
         }
       });
     }
