@@ -36,5 +36,6 @@ docker run -it --name query_analyze -p 4000:3000 query_analyze:1.0 bash
 docker exec -it query_analyze bash
 
 ## Project Start
-cd query_explain_analyze
+cd query_explain_analyze<br>
+npm run setup<br>
 npm run start
