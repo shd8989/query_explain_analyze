@@ -88,7 +88,7 @@ const AnalyzeQuery = () => {
       }
       
       if(params.params !== undefined && (params.params.test_scenario !== '' && params.params.db_seq !== 0 && params.params.query_seq !== 0)) {
-        const response = await axios.get('/api/v1/select-one-query', params)
+        const response = await axios.get('http://localhost:3001/api/v1/select-one-query', params)
         
         if(response.data.length > 0) {
           const newData = await response.data.map((rowData) => ({

@@ -11,7 +11,7 @@ const Selectbox = ({sendDataToParent, ordinalNumber}) => {
 
   useEffect(() => {
     const scenario_info = async () => {
-      const response = await axios.get('/api/v1/select-scenario', {});
+      const response = await axios.get('http://localhost:3001/api/v1/select-scenario', {});
       if(response.data === 'ECONNREFUSED') {
         alert('데이터베이스 연결 에러입니다.');
         navigate("/dbconn_create");
@@ -56,7 +56,7 @@ const Selectbox2 = ({sendDataToParent, ordinalNumber, scenario}) => {
       } else {
         params = {};
       }
-      const response = await axios.get('/api/v1/select-db', params);
+      const response = await axios.get('http://localhost:3001/api/v1/select-db', params);
       if(response.data === 'ECONNREFUSED') {
         alert('데이터베이스 연결 에러입니다.');
         navigate("/dbconn_create");
@@ -99,7 +99,7 @@ const Selectbox3 = ({sendDataToParent, ordinalNumber, dbSeq}) => {
     } else {
       params = {};
     }
-    const response = await axios.get('/api/v1/select-query', params);
+    const response = await axios.get('http://localhost:3001/api/v1/select-query', params);
     const newData = await response.data.map((rowData) => ({
         query_seq: rowData.query_seq,
         query: rowData.query

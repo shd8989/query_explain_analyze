@@ -63,7 +63,7 @@ const QueryPlanList = () => {
     let params = {};
     if(scenario1 !== '' && dbSeq1 !== 0 && dbSeq1 !== '' && scenario2 !== '' && dbSeq2 !== 0 && dbSeq1 !== '') {
       params = {params:{first_scenario: scenario1, first_db_seq: dbSeq1, second_scenario: scenario2, second_db_seq: dbSeq2}};
-      const response = await axios.get('/api/v1/query-plan-list', params);
+      const response = await axios.get('http://localhost:3001/api/v1/query-plan-list', params);
       const newQueryData = await response.data.map((rowData) => ({
           first_seq: rowData.first_seq,
           first_scenario: rowData.first_scenario,

@@ -57,7 +57,7 @@ const DbCreate = () => {
     }
 
     if(dbHost !== '' && dbPort !== '' && dbName !== '' && dbUser !=='' && dbUserPw !== '') {
-      await axios.post('/api/v1/create-dbconn', {
+      await axios.post('http://localhost:3001/api/v1/create-dbconn', {
         nickname: nickname,
         dbHost: dbHost,
         dbPort: dbPort,

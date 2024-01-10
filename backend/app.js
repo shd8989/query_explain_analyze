@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const readline = require('readline');
 const { Pool } = require("pg");
+const cors = require('cors');
 require("dotenv").config();
 
 const app = express();
@@ -16,7 +17,7 @@ app.use(
     extended: true,
   })
 );
-// app.use(cors());
+app.use(cors());
 
 app.listen(app.get('port'), ()=>{
     console.log(app.get('port'), '번 포트에서 대기 중')
@@ -28,7 +29,7 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_USER_PW,
-    max: 30,
+    max: 20,
     idleTimeoutMillis: 1000
 });
 
@@ -132,7 +133,6 @@ app.post(api_context + '/exec-single-query', (req, res) => {
                 if(err != null) {
                     res.send(err.code);
                 } else {
-                    console.log('response.rows[0]', response.rows[0]);
                     db_host = response.rows[0].db_host;
                     db_port = response.rows[0].db_port;
                     db_name = response.rows[0].db_name;
@@ -145,7 +145,7 @@ app.post(api_context + '/exec-single-query', (req, res) => {
                         database: db_name,
                         user: db_user,
                         password: db_user_pw,
-                        max: 30,
+                        max: 20,
                         idleTimeoutMillis: 1000
                     });
                     newPool.connect(function(err, client) {
@@ -201,7 +201,7 @@ app.post(api_context + '/exec-multi-query', (req, res) => {
                         database: db_name,
                         user: db_user,
                         password: db_user_pw,
-                        max: 30,
+                        max: 20,
                         idleTimeoutMillis: 1000
                     });
                     newPool.connect(function(err, client) {

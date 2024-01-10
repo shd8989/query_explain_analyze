@@ -46,7 +46,7 @@ const DbList = () => {
 
   useEffect(() => {
     const selectQuery = async () => {
-      const response = await axios.get('/api/v1/dbconn-list', {});
+      const response = await axios.get('http://localhost:3001/api/v1/dbconn-list', {});
       if(response.data === 'ECONNREFUSED') {
         alert('데이터베이스 연결 에러입니다.');
         navigate("/dbconn_create");

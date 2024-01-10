@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const CompareQuery = ({data, sendDataToParent}) => {
   const explainQuery = async () => {
-    const response = await axios.get('/api/v1/query-plan', {params: {first_query: data.first.query, second_query: data.second.query}});
+    const response = await axios.get('http://localhost:3001/api/v1/query-plan', {params: {first_query: data.first.query, second_query: data.second.query}});
     sendDataToParent(response.data);
   };
 
