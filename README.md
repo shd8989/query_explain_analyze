@@ -22,6 +22,9 @@ PostgreSQL 14.10
 3. npm run setup
 4. npm run start
 
+## project process kill
+ps -ef | grep node | awk '{print $3}' | xargs kill -9
+
 # Docker Command
 ## Docker build
 docker build -f Dockerfile -t query_analyze:1.0 .
