@@ -45,7 +45,6 @@ app.post(api_context + '/create-dbconn', (req, res) => {
             client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
             .then((response) => {
                 res.send(200);
-                console.log('success insert database information');
             })
             .catch((e) => {
                 console.error(e.stack);
@@ -66,15 +65,22 @@ app.post(api_context + '/create-dbconn', (req, res) => {
                 if(err) {
                     console.log('connection error', err);
                 }
-                const insertQuery = "INSERT INTO tb_database (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
-                client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
+                const createTable1 = "CREATE TABLE IF NOT EXISTS tb_result_querytest(query_seq bigserial, db_seq integer, test_scenario varchar(100), query varchar(500), return_data text, is_success varchar(7), error_msg varchar(500), execute_time varchar(20), insert_dt timestamp)";
+                const createTable2 = "CREATE TABLE IF NOT EXISTS tb_database(db_seq serial, nickname varchar(50), db_name varchar(30), db_host varchar(15), db_port int, db_user varchar(30), db_user_pw varchar(200), resultdb_yn char(1), insert_dt timestamp default now())";
+                client.query(createTable1)
                 .then((response) => {
-                    res.send(200);
-                    console.log('success insert database information');
+                    client.query(createTable2)
+                    .then((response3) => {
+                        const insertQuery = "INSERT INTO tb_database (nickname, db_host, db_port, db_name, db_user, db_user_pw, resultdb_yn) VALUES ($1, $2, $3, $4, $5, $6, $7)";
+                        client.query(insertQuery, [nickname, dbHost, dbPort, dbName, dbUser, dbUserPw, resultDbYn])
+                        .then((response5) => {
+                            res.send(200);
+                        })
+                        .catch((e) => console.error(e.stack));
+                    })
+                    .catch((e) => console.error(e.stack));
                 })
-                .catch((e) => {
-                    console.error(e.stack);
-                });
+                .catch((e) => console.error(e.stack));
             });
             pool.on('end', function() {client.end();});
         } catch (err) {

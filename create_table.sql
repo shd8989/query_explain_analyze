@@ -69,6 +69,6 @@ SELECT c.prod_no, string_agg(a.dept_no::text, ',') AS dept_no
 FROM tb_team a
 JOIN tb_user b ON a.dept_no = b.dept_no
 JOIN tb_product c ON b.user_no = c.user_no
-WHERE b.user_no <= 5000
+WHERE b.user_no <= 1000
 AND a.team_name not in ('Arsenal', 'Wolverhampton Wanderers', 'Everton', 'Tottenham Hotspur')
 GROUP BY c.prod_no;
